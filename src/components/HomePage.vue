@@ -1,8 +1,9 @@
 <script setup>
-
+import HomeQuickStart from './HomeQuickStart.vue';
 </script>
 <template>
-    <div>
-        Hello World!
-    </div>
+    <header>
+        Rock, Paper, Scissors 101!
+        <HomeQuickStart />
+    </header>
 </template>
