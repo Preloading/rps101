@@ -1,13 +1,13 @@
 <template>
     <div>
         Join via code
-        <input v-model="gameCode" @submit="joinGame()" placeholder="Code">
+        <input v-model="gameCode" @submit="joinGame" class="form-text" placeholder="Code">
         <br>
         Join a random game
-        <button @click="joinRandom">Join Random Game</button>
+        <button @click="joinRandom" class="btn btn-primary">Join Random Game</button>
         <br>
         Or create your own game
-        <button @click="createGame">Create Game</button>
+        <button @click="createGame" class="btn btn-primary">Create Game</button>
     </div>
 </template>
 <script setup>
