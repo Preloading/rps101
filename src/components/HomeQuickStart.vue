@@ -11,15 +11,18 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, defineModel } from 'vue';
 
 var gameCode = ref("");
+var enterGameStat = defineModel("enter-game-stat"); //1 = quickstart, 2 = create game
 
 function joinRandom() {
     console.log("Join Random Game");
 }
 function createGame() {
     console.log("Create Game")
+    enterGameStat = 2
+    
 }
 function joinGame() {
     console.log("Join Game")

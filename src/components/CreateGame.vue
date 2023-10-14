@@ -19,11 +19,12 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+
 var gamePublic = ref(false);
 var gameType = ref(false); // Deathmatch - false Classes - true
 var gameMatches = ref(true);
 
 function createGame() {
-    
+    router.push({ path: '/host', props: { gamePublic: gamePublic, gameType: gameType, gameMatches: gameMatches }});
 }
 </script>

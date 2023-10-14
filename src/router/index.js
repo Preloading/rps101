@@ -18,7 +18,7 @@ const router = createRouter({
     {
       path: '/host/',
       name: 'host',
-      component: HostView
+      component: HostView,
     }
   ]
 })
