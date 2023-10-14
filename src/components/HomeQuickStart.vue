@@ -14,14 +14,14 @@
 import { ref, defineModel } from 'vue';
 
 var gameCode = ref("");
-var enterGameStat = defineModel("enter-game-stat"); //1 = quickstart, 2 = create game
-
+ //1 = quickstart, 2 = create game
+const emit = defineEmits(['enter-game-state'])
 function joinRandom() {
     console.log("Join Random Game");
 }
 function createGame() {
     console.log("Create Game")
-    enterGameStat = 2
+    emit('enter-game-state', 2);
     
 }
 function joinGame() {
