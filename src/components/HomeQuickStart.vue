@@ -11,7 +11,7 @@
     </div>
 </template>
 <script setup>
-import { ref, defineModel } from 'vue';
+import { ref } from 'vue';
 
 var gameCode = ref("");
  //1 = quickstart, 2 = create game
