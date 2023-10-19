@@ -19,6 +19,11 @@ const router = createRouter({
       path: '/host/',
       name: 'host',
       component: HostView,
+      query: {
+        gamePublic: false,
+        gameType: false,
+        gameMatches: true,
+      },
     }
   ]
 })

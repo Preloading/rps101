@@ -5,7 +5,7 @@
     </header>
     <div>
         <HomeQuickStart v-if="enterGameState == 1" v-model="enterGameState" @enter-game-state="handleGameStateChange"/>
-        <CreateGame v-else-if="enterGameState == 2" @enter-game-state="handleGameStateChange" />
+        <CreateGame v-else-if="enterGameState == 2" @enter-game-state="handleGameStateChange"  />
         <h2>What is Rock Paper Scissors 101?</h2>
         <p>https://www.umop.com/rps101.htm</p>
         WARNING THIS DOES NOT WORK, AND IS IN DEVELOPMENT

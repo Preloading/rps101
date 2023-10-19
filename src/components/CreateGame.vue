@@ -30,7 +30,14 @@ const router = useRouter()
 const route = useRoute()
 
 function createGame() {
-    router.push({ path: '/host', props: { gamePublic: gamePublic, gameType: gameType, gameMatches: gameMatches }});
+    router.push({
+        name: 'host',
+        query: {
+            gamePublic: gamePublic.value,
+            gameType: gameType.value,
+            gameMatches: gameMatches.value,
+        },
+    });
 }
 function backToQuickStart() {
     emit('enter-game-state', 1);
