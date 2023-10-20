@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 import { getFirestore, collection } from 'firebase/firestore'
 // ... other firebase imports
 
@@ -21,7 +22,8 @@ export const firebaseApp = initializeApp({
   })
 
 // used for the firestore refs
-const db = getFirestore(firebaseApp)
+export const db = getFirestore(firebaseApp)
+export const auth = getAuth(firebaseApp)
 
 // // here we can export reusable database references
-// export const gamesRef = collection(db, 'games')
+export const gamesRef = collection(db, 'games')
