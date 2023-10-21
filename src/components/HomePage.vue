@@ -9,6 +9,7 @@
         <h2>What is Rock Paper Scissors 101?</h2>
         <p>https://www.umop.com/rps101.htm</p>
         WARNING THIS DOES NOT WORK, AND IS IN DEVELOPMENT
+        Attributions TODO
     </div>
 </template>
 <script setup>

@@ -11,14 +11,16 @@
 </template>
 <script setup>
 import { signInAnonymously } from 'firebase/auth';
-import { auth, gamesRef } from '../firebase';
+import { auth, gamesRef } from '../../firebase';
 import { useCurrentUser } from 'vuefire';
 import { ref, onMounted } from 'vue';
-import { addDoc, getCountFromServer, query, where, serverTimestamp } from 'firebase/firestore';
+import { addDoc, getCountFromServer, query, where, serverTimestamp, collection, deleteDoc, setDoc, doc } from 'firebase/firestore';
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const emit = defineEmits(["game-code", "game-doc", "host-state"])
+
+
 
 onMounted(async () => {
     function makeid(length) {
@@ -45,11 +47,17 @@ onMounted(async () => {
         }
         return code
     }
+    if (route.query.gameMatches == null
+    ||  route.query.gamePublic == null
+    ||  route.query.gameType == null) {
+        router.push({name: "home"})
+        return;
+    }
     await signInAnonymously(auth);
     const uid = useCurrentUser().value.uid;
     const goodCode = await checkCode()
     async function createGame() {
-        return await addDoc(gamesRef, {
+        var gameDoc = await addDoc(gamesRef, {
             code: goodCode,
             hostUser: uid,
             gameMatches: route.query.gameMatches,
@@ -57,12 +65,28 @@ onMounted(async () => {
             gameType: route.query.gameType,
             timestamp: serverTimestamp(),
         })
+        return gameDoc
+        
     }
-    const createdGame = createGame()
+    async function createSubCollections() {
+        // i love suffering
+        // for myself and other source code lurkers, this is suppost to create the players subcollection, and to allow me to view it and such.
+        //collection(createdGame, "players")
+        setDoc(doc(collection(createdGame, "players"), "TEMP"), {
+            displayName: "TempUser",
+            userId: "TEMP",
+            avatarSeed: "TEMP",
+            avatarStyle: "1",
+        })
+        //deleteDoc(doc(collection(createdGame, "players"), "TEMP"))
+    }
+    const createdGame = await createGame()
+    const createdGameId = (await createdGame).id
+    await createSubCollections()
     console.log("Done Creating Game")
     router.replace({'query': null});
     emit("game-code", goodCode);
-    emit("game-doc", createdGame);
+    emit("game-doc", createdGameId);
     emit("host-state", 1);
     
 });

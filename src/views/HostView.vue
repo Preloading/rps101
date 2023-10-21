@@ -1,22 +1,22 @@
 <template>
     <div>
         <CreatingGame v-if="hostStatus == 0" @game-code="getGameCode" @game-doc="getGameDoc" @host-state="setHostState"/>
-        <HostWaitingForPlayers v-else-if="hostStatus == 1"/>
+        <HostWaitingForPlayers v-else-if="hostStatus == 1" :game-code="gameCode" :game-doc-id="gameDocId"/>
         <HostInGame v-else />
-        {{ gamePublic }}
     </div>
 </template>
 <script setup>
-import HostWaitingForPlayers from '../components/HostWaitingForPlayers.vue';
-import HostInGame from '../components/HostInGame.vue';
-import CreatingGame from '../components/CreatingGame.vue'
-import { useRoute } from 'vue-router';
+import HostWaitingForPlayers from '../components/Host/HostWaitingForPlayers.vue';
+import HostInGame from '../components/Host/HostInGame.vue';
+import CreatingGame from '../components/Host/CreatingGame.vue'
+import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';
 var hostStatus = ref(0);
 var route = useRoute();
-var gamePublic = ref(route.query.gamePublic);
+const router = useRouter();
 var gameDocId = ""
 var gameCode = ""
+
 
 function getGameCode(data) {
     console.log(data)
