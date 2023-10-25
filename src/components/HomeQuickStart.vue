@@ -13,7 +13,10 @@
 </template>
 <script setup>
 import { ref } from 'vue';
-
+import { getDocs, query, where, getCountFromServer } from "firebase/firestore"
+import { gamesRef } from '../firebase';
+import { useRouter } from 'vue-router'
+const router = useRouter();
 var gameCode = ref("");
  //1 = quickstart, 2 = create game
 const emit = defineEmits(['enter-game-state'])
@@ -25,8 +28,35 @@ function createGame() {
     emit('enter-game-state', 2);
     
 }
-function joinGame() {
+async function joinGame() {
+    if (await checkCode(gameCode.value))
+    {
+        // This should mean that the game exists in the database, but might already be started, or has finished, so we need to check if it's started, and if it's done
+        const gameDocs = await getDocs(query(gamesRef, where("code", "==", gameCode.value)))
+        const gameDoc = gameDocs.docs[0]
+        if (gameDoc.data.inGame) {
+            alert("game already started");
+        } else {
+            router.push({
+                name: 'game',
+                query: {
+                    gameId: gameDoc.id
+                },
+            });
+        }
+        
+    } else {
+        // This game does not exist
+        alert("not a valid game")
+    }
     console.log("Join Game")
 }
-
+async function checkCode(code) {
+        const codeCheck = query(gamesRef, where("code", "==", code))
+        const allGamesWithCode = await getCountFromServer(codeCheck)
+        if (allGamesWithCode.data.length == 1) {
+            return true
+        }
+        return false;
+    }
 </script>
