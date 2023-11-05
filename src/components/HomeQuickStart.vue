@@ -52,11 +52,12 @@ async function joinGame() {
     console.log("Join Game")
 }
 async function checkCode(code) {
-        const codeCheck = query(gamesRef, where("code", "==", code))
-        const allGamesWithCode = await getCountFromServer(codeCheck)
-        if (allGamesWithCode.data.length == 1) {
-            return true
-        }
-        return false;
+    const codeCheck = query(gamesRef, where("code", "==", code))
+    const allGamesWithCode = await getCountFromServer(codeCheck)
+    console.log(allGamesWithCode.data.length)
+    if (await allGamesWithCode.data.length == 1) {
+        return true
     }
+    return false;
+}
 </script>
