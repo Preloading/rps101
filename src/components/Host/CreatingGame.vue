@@ -42,7 +42,7 @@ onMounted(async () => {
         const code = makeid(8) 
         const codeCheck = query(gamesRef, where("code", "==", code))
         const allGamesWithCode = await getCountFromServer(codeCheck)
-        if (allGamesWithCode.data.length != 0) {
+        if (allGamesWithCode.data().count != 0) {
             return checkCode()
         }
         return code

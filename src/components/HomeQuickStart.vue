@@ -54,8 +54,7 @@ async function joinGame() {
 async function checkCode(code) {
     const codeCheck = query(gamesRef, where("code", "==", code))
     const allGamesWithCode = await getCountFromServer(codeCheck)
-    console.log(allGamesWithCode.data.length)
-    if (await allGamesWithCode.data.length == 1) {
+    if (await allGamesWithCode.data().count == 1) {
         return true
     }
     return false;

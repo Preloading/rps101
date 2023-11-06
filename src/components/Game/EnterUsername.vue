@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h1>RPS 101</h1>
         <input v-model="username" @submit="joinGame" class="form-text" placeholder="Username">
         <button @click="joinGame" class="btn btn-primary">Join Game</button>
     </div>
@@ -14,20 +13,39 @@ import { addDoc, getCountFromServer, query, where, serverTimestamp, collection, 
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
-const emit = defineEmits(["playerDocId", gameState])
+const emit = defineEmits(["player-doc-id", "game-state"])
 const username = ref("")
+
+checkIdIsValid();
+
+async function checkIdIsValid() {
+    console.log("Validate ID")
+    // Validate ID and game, one more time!
+    if (route.query.gameId == null) {
+        router.push({name: "home"})
+    }
+    const gameDoc = await getDoc(doc(gamesRef, route.query.gameId))
+    if (gameDoc == null) {
+        router.push({name: "home"})
+    }
+    if (gameDoc.data.inGame) {
+        router.push({name: "home"})
+    }
+}
+
 
 async function joinGame() {
     async function checkName(name) {
         const nameCheck = query(playersRef, where("displayName", "==", name))
-        const allUsersWithName = await getCountFromServer()
-        if (allGamesWithName.data.length == 0) {
+        const allUsersWithName = await getCountFromServer(nameCheck)
+        if (allUsersWithName.data.length == 0) {
             return true;
         }
         return false;
     }
+    console.log("Validate ID")
     // Validate ID and game, one more time!
-    if (route.query.gameId) {
+    if (route.query.gameId == null) {
         router.push({name: "home"})
         return;
     }
@@ -40,11 +58,12 @@ async function joinGame() {
         router.push({name: "home"})
         return;
     }
+    console.log("Sign In to firebase");
     // Sign in to anom user
     await signInAnonymously(auth)
     const uid = useCurrentUser().value.uid;
     // Verify name is not empty
-    const playersRef = collection(gameDoc, "users")
+    const playersRef = collection(gameDoc.ref, "players")
     const players = useCollection(playersRef)
     if (username == "") {
         alert("Can't have an empty username!")
@@ -56,7 +75,7 @@ async function joinGame() {
         return;
     }
     // Pick avatar seed
-    const avatarSeed = Math.floor(Math.random() * 10);
+    const avatarSeed = Math.floor(Math.random() * 1000);
     console.log(avatarSeed);
 
     // Add User to game
@@ -67,8 +86,8 @@ async function joinGame() {
         avatarStyle: 1,
     })
     // Go to waiting component
-    emit("playerDocId", playerDoc.id)
-    emit("gameState", 1)
+    emit("player-doc-id", playerDoc.id)
+    emit("game-state", 1)
 }
 
 </script>
