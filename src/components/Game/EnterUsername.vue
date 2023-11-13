@@ -13,7 +13,7 @@ import { addDoc, getCountFromServer, query, where, serverTimestamp, collection, 
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
-const emit = defineEmits(["player-doc-id", "game-state"])
+const emit = defineEmits(["player-doc-id", "game-doc-id", "game-state"])
 const username = ref("")
 
 checkIdIsValid();
@@ -38,7 +38,7 @@ async function joinGame() {
     async function checkName(name) {
         const nameCheck = query(playersRef, where("displayName", "==", name))
         const allUsersWithName = await getCountFromServer(nameCheck)
-        if (allUsersWithName.data.length == 0) {
+        if (allUsersWithName.data().count == 0) {
             return true;
         }
         return false;
@@ -79,14 +79,18 @@ async function joinGame() {
     console.log(avatarSeed);
 
     // Add User to game
-    const playerDoc = await addDoc(playersRef, {
+
+    const playerData = {
         displayName: username.value,
         userId: uid,
         avatarSeed: avatarSeed,
         avatarStyle: 1,
-    })
+        timestamp: serverTimestamp(),
+    }
+    const playerDoc = await addDoc(playersRef, playerData)
     // Go to waiting component
     emit("player-doc-id", playerDoc.id)
+    emit("game-doc-id", gameDoc.id)
     emit("game-state", 1)
 }
 

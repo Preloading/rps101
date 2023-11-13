@@ -77,6 +77,7 @@ onMounted(async () => {
             userId: "TEMP",
             avatarSeed: "TEMP",
             avatarStyle: "1",
+            timestamp: serverTimestamp(),
         })
         //deleteDoc(doc(collection(createdGame, "players"), "TEMP"))
     }

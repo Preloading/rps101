@@ -5,12 +5,20 @@
     </div>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { createAvatar } from '@dicebear/core';
 import { botttsNeutral, bottts, identicon, thumbs, pixelArt } from '@dicebear/collection';
-const props = defineProps(["playerId", "playerDoc"])
+import { useDocument } from 'vuefire';
+import { doc } from '@firebase/firestore';
+
+const props = defineProps(["playerId", "playerDoc", "playersRef"])
 console.log(props.playerDoc)
 const username = ref(props.playerDoc.displayName)
+const {
+    data: playerDocRef,
+    promise: playerDocRefPromise
+ } = useDocument(doc(props.playersRef, props.playerDoc.id))
+
 function getStyleFromNumber(style) {
     switch (style) {
         case 1:
@@ -27,10 +35,20 @@ function getStyleFromNumber(style) {
             return botttsNeutral;
     }
 }
-const avatar = createAvatar(getStyleFromNumber(props.playerDoc.avatarStyle), {
+var avatar = createAvatar(getStyleFromNumber(props.playerDoc.avatarStyle), {
   seed: props.playerDoc.avatarSeed,
   size: 64,
   // ... other options
 }).toDataUriSync();
 
+watch(playerDocRef, async (newPlayer, oldPlayer) => {
+    await playerDocRefPromise.value;
+    console.log()
+    avatar = createAvatar(getStyleFromNumber(newPlayer.avatarStyle), {
+        seed: newPlayer.avatarSeed,
+        size: 64,
+        // ... other options
+    }).toDataUriSync();
+    console.log(newPlayer.avatarSeed)
+})
 </script>
