@@ -1,11 +1,28 @@
 <template>
     <div>
         <h1>Host Waiting for players</h1>
-        <div><p>Join with the code at rps.loganserver.net </p><b>{{ props.gameCode }}</b></div>
-        <li v-for="player in players" :key="player.id">
-            <ConnectedUsers :player-doc="player" />
-        </li>
-        <button class="btn">Start</button>
+        <nav class="navbar bg-body-tertiary">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">
+                    Join with the code at rps.loganserver.net: 
+                    <br><br>
+                    <b class="fs-1">{{ props.gameCode }}</b>
+                </span>
+                <span class="navbar-text">
+                    <button class="btn btn-primary btn-lg">Start</button>
+                </span>
+            </div>
+        </nav>
+        <ul v-if="players.length != 0" class="list-group list-group-horizontal flex-wrap">
+            <li v-for="player in players" :key="player.id" >
+                <ConnectedUsers :player-doc="player" />
+            </li>
+        </ul>
+        <div v-else>
+            <p class="text-center fs-3">No players yet... Go invite some people!</p>
+        </div>
+        
+        
     </div>
 </template>
 <script setup>
