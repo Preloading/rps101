@@ -72,7 +72,7 @@ onMounted(async () => {
         // i love suffering
         // for myself and other source code lurkers, this is suppost to create the players subcollection, and to allow me to view it and such.
         //collection(createdGame, "players")
-        setDoc(doc(collection(createdGame, "players"), "TEMP"), {
+        addDoc(collection(createdGame, "players"), {
             displayName: "TempUser",
             userId: "TEMP",
             avatarSeed: "TEMP",
@@ -83,7 +83,10 @@ onMounted(async () => {
     }
     const createdGame = await createGame()
     const createdGameId = (await createdGame).id
-    await createSubCollections()
+    for (var i=1;i<=10; i++) {
+        await createSubCollections()
+    }
+    
     console.log("Done Creating Game")
     router.replace({'query': null});
     emit("game-code", goodCode);
