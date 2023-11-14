@@ -1,4 +1,8 @@
 .waitingPlayer {
     padding: 16px;
     background-color: blueviolet;
+    margin: 16px;
+}
+.usernameHost {
+    padding: 12px;
 }

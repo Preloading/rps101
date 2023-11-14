@@ -1,7 +1,7 @@
 <template>
     <div class="rounded waitingPlayer">
         <img :alt="username + '\'s avatar'" :src="avatar" class="col rounded"> 
-        <p class="">{{ username }}</p>
+        <span class="usernameHost">{{ username }}</span>
     </div>
 </template>
 <script setup>

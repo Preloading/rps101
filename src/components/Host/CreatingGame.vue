@@ -63,6 +63,7 @@ onMounted(async () => {
             gameMatches: route.query.gameMatches,
             gamePublic: route.query.gamePublic,
             gameType: route.query.gameType,
+            inGame: false,
             timestamp: serverTimestamp(),
         })
         return gameDoc

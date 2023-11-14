@@ -9,12 +9,12 @@
                     <b class="fs-1">{{ props.gameCode }}</b>
                 </span>
                 <span class="navbar-text">
-                    <button class="btn btn-primary btn-lg">Start</button>
+                    <button class="btn btn-primary btn-lg" @click="startGame">Start</button>
                 </span>
             </div>
         </nav>
-        <ul v-if="players.length != 0" class="list-group list-group-horizontal flex-wrap" v-for="player in players" :key="player.id">
-            <li >
+        <ul v-if="players.length != 0" class="list-group list-group-horizontal" v-for="player in players" :key="player.id">
+            <li class="">
                 <ConnectedUsers :player-doc="player" :players-ref="playersRef"  />
             </li>
         </ul>
@@ -34,8 +34,22 @@ const gameRef = doc(gamesRef, props.gameDocId)
 const playersRef = collection(gameRef, "players")
 const players = useCollection(query(playersRef, orderBy("timestamp")))
 
-function startGame() {
+async function startGame() {
     // TODO: Start Game
+    // so basicly no game in the game
+    alert("LETS GO INTO GAMEPLAY");
+    // First check if we have at least 4 players. (subject to change)
+    if (players.value.length <= 4) {
+        // Not enough players! Cannot continue.
+        alert("not enough players!");
+        return;
+    }
+    // Set game to started
+    await updateDoc(gameRef, {
+        inGame: true
+    })
+
+
 }
 
 </script>
