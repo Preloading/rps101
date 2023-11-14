@@ -72,6 +72,7 @@ onMounted(async () => {
         // i love suffering
         // for myself and other source code lurkers, this is suppost to create the players subcollection, and to allow me to view it and such.
         //collection(createdGame, "players")
+        //nvm, this is so i don't have to create 10 players by opening tabs
         addDoc(collection(createdGame, "players"), {
             displayName: "TempUser",
             userId: "TEMP",
