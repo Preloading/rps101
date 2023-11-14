@@ -35,20 +35,22 @@ function getStyleFromNumber(style) {
             return botttsNeutral;
     }
 }
-var avatar = createAvatar(getStyleFromNumber(props.playerDoc.avatarStyle), {
+var avatar = ref(createAvatar(getStyleFromNumber(props.playerDoc.avatarStyle), {
   seed: props.playerDoc.avatarSeed,
   size: 64,
   // ... other options
-}).toDataUriSync();
+}).toDataUriSync());
 
 watch(playerDocRef, async (newPlayer, oldPlayer) => {
     await playerDocRefPromise.value;
     console.log(playerDocRefPromise.value)
-    avatar = await createAvatar(getStyleFromNumber(playerDocRef.value.avatarStyle), {
+    console.log(playerDocRef.value.avatarSeed)
+    avatar.value = await createAvatar(getStyleFromNumber(playerDocRef.value.avatarStyle), {
         seed: playerDocRef.value.avatarSeed,
         size: 64,
         // ... other options
     }).toDataUriSync();
-    console.log(newPlayer.avatarSeed)
+    
+
 })
 </script>
