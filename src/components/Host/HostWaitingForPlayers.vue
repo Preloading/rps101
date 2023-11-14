@@ -13,8 +13,8 @@
                 </span>
             </div>
         </nav>
-        <ul v-if="players.length != 0" class="list-group list-group-horizontal flex-wrap">
-            <li v-for="player in players" :key="player.id">
+        <ul v-if="players.length != 0" class="list-group list-group-horizontal flex-wrap" v-for="player in players" :key="player.id">
+            <li >
                 <ConnectedUsers :player-doc="player" :players-ref="playersRef"  />
             </li>
         </ul>

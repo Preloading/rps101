@@ -43,9 +43,9 @@ var avatar = createAvatar(getStyleFromNumber(props.playerDoc.avatarStyle), {
 
 watch(playerDocRef, async (newPlayer, oldPlayer) => {
     await playerDocRefPromise.value;
-    console.log()
-    avatar = createAvatar(getStyleFromNumber(newPlayer.avatarStyle), {
-        seed: newPlayer.avatarSeed,
+    console.log(playerDocRefPromise.value)
+    avatar = await createAvatar(getStyleFromNumber(playerDocRef.value.avatarStyle), {
+        seed: playerDocRef.value.avatarSeed,
         size: 64,
         // ... other options
     }).toDataUriSync();
