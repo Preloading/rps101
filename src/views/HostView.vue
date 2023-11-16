@@ -1,13 +1,13 @@
 <template>
     <div>
         <CreatingGame v-if="hostStatus == 0" @game-code="getGameCode" @game-doc="getGameDoc" @host-state="setHostState"/>
-        <HostWaitingForPlayers v-else-if="hostStatus == 1" :game-code="gameCode" :game-doc-id="gameDocId"/>
-        <HostInGame v-else />
+        <HostWaitingForPlayers v-else-if="hostStatus == 1" :game-code="gameCode" :game-doc-id="gameDocId" @host-state="setHostState"/>
+        <HostInGame v-else :game-doc-id="gameDocId"/>
     </div>
 </template>
 <script setup>
 import HostWaitingForPlayers from '../components/Host/HostWaitingForPlayers.vue';
-import HostInGame from '../components/Host/HostInGame.vue';
+import HostInGame from '../components/Host/InGame/HostInGame.vue';
 import CreatingGame from '../components/Host/CreatingGame.vue'
 import { useRoute, useRouter } from 'vue-router';
 import { ref } from 'vue';

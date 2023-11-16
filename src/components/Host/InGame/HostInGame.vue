@@ -1,4 +1,8 @@
 <template>
-    <h1>THE GAMEPLAY HAS STARTED!!!!!</h1>
-    <p>todo add gameplay lol</p>
+    <div>
+        <h1>Host in game</h1>
+    </div>
 </template>
+<script setup>
+
+</script>

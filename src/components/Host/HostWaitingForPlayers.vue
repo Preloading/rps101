@@ -25,10 +25,14 @@
 </template>
 <script setup>
 import { useCollection } from 'vuefire'
-import { collection, doc, orderBy, query } from 'firebase/firestore'
+import { collection, doc, orderBy, query,updateDoc } from 'firebase/firestore'
 import { gamesRef } from '../../firebase.js'
 import ConnectedUsers from "./ConnectedUsers.vue"
+
 const props = defineProps(["game-code", "game-doc-id"]);
+const emit = defineEmits(["host-state"])
+
+
 console.log(props.gameDocId)
 const gameRef = doc(gamesRef, props.gameDocId)
 const playersRef = collection(gameRef, "players")
@@ -36,8 +40,6 @@ const players = useCollection(query(playersRef, orderBy("timestamp")))
 
 async function startGame() {
     // TODO: Start Game
-    // so basicly no game in the game
-    alert("LETS GO INTO GAMEPLAY");
     // First check if we have at least 4 players. (subject to change)
     if (players.value.length <= 4) {
         // Not enough players! Cannot continue.
@@ -48,7 +50,7 @@ async function startGame() {
     await updateDoc(gameRef, {
         inGame: true
     })
-
+    emit("host-state", 3);
 
 }
 
