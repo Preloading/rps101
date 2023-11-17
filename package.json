@@ -10,6 +10,7 @@
   "dependencies": {
     "@dicebear/collection": "^7.0.1",
     "@dicebear/core": "^7.0.1",
+    "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.2",
     "firebase": "^10.5.0",
     "vue": "^3.3.4",

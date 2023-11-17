@@ -1,9 +1,5 @@
 <template>
     <div>
-        <h1>
-            Player: Waiting for game to start
-        </h1>
-        todo: make component
         <div class="placeholder-glow" v-if="isLoaded == false">
             <svg class="placeholder" width="64px" height="64px" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avatar" preserveAspectRatio="xMidYMid slice" focusable="false">
                 <title>Avatar</title>
@@ -12,12 +8,21 @@
             <br>
             <span class="placeholder col-1"></span>
         </div>
-        <div class="" v-else>
-            <img alt="Avatar" :src="avatar" class="col rounded">
-            <br> 
-            <p class="">{{ username }}</p>
-            <button @click="randomizeAvatar" class="btn btn-primary">Randomize Avatar</button>
-            
+        <div v-else class="h-100 d-flex align-items-center justify-content-center flex-direction-column">
+            <div class="rounded waitingPlayer" >
+                <div class="text-center">
+                    <img alt="Avatar" :src="avatar" class="col rounded img-fluid">
+                </div>
+                
+                <br> 
+                <p class="fs-2 text-center">{{ username }}</p>
+                <button @click="randomizeAvatar" class="btn btn-primary">Randomize Avatar</button>
+                
+            </div>
+         </div>
+         <div class="text-center fs-2">
+            <p>You're in!</p>
+            <p>Wait for the host to start the game!</p>
         </div>
         
     </div>
@@ -71,14 +76,14 @@ onMounted(async () => {
     // cool seeds: 720, TEMP, 10
     avatar.value = createAvatar(getStyleFromNumber(player.value.avatarStyle), {
         seed: player.value.avatarSeed,
-        size: 64,
+        size: 128,
         // ... other options
     }).toDataUriSync();
     isLoaded.value = true;
     watch(player, async (newPlayer, oldPlayer) => {
         avatar.value = createAvatar(getStyleFromNumber(newPlayer.avatarStyle), {
             seed: newPlayer.avatarSeed,
-            size: 64,
+            size: 128,
             // ... other options
         }).toDataUriSync();
         console.log(newPlayer.avatarSeed)
