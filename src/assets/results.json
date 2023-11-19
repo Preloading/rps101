@@ -1,0 +1,60 @@
+{
+    "dataversion": 1,
+    "formatversion": 1,
+    "options": [
+        {
+            "optionName": "Rock",
+            "image": "../img/options/1.png",
+            "outcomes": [
+                {
+                    "result": 2,
+                    "reason": "Draw!"
+                },
+                {
+                    "result": 0,
+                    "reason": "Paper covers Rock"
+                },
+                {
+                    "result": 1,
+                    "reason": "Rock smashes Scissors"
+                }
+            ]
+        },
+        {
+            "optionName": "Paper",
+            "image": "../img/options/2.png",
+            "outcomes": [
+                {
+                    "result": 1,
+                    "reason": "Paper covers Rock"
+                },
+                {
+                    "result": 2,
+                    "reason": "Draw!"
+                },
+                {
+                    "result": 0,
+                    "reason": "Scissors cuts Paper"
+                }
+            ]
+        },
+        {
+            "optionName": "Scissors",
+            "image": "../img/options/3.png",
+            "outcomes": [
+                {
+                    "result": 0,
+                    "reason": "Rock smashes Scissors"
+                },
+                {
+                    "result": 1,
+                    "reason": "Scissors cuts Paper"
+                },
+                {
+                    "result": 2,
+                    "reason": "Draw!"
+                }
+            ]
+        }
+    ]
+}

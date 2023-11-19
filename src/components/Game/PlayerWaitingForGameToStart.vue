@@ -12,11 +12,12 @@
             <div class="rounded waitingPlayer" >
                 <div class="text-center">
                     <img alt="Avatar" :src="avatar" class="col rounded img-fluid">
+                    <br> 
+                    <p class="fs-2 text-center">{{ username }}</p>
+                    <button @click="randomizeAvatar" class="btn btn-primary">Randomize Avatar</button>
                 </div>
                 
-                <br> 
-                <p class="fs-2 text-center">{{ username }}</p>
-                <button @click="randomizeAvatar" class="btn btn-primary">Randomize Avatar</button>
+                
                 
             </div>
          </div>
@@ -44,6 +45,7 @@ var playerRef;
 
 onMounted(async () => {
     const gameRef = doc(gamesRef, props.gameDocId)
+    const game = useDocument(gamesRef)
     playerRef = doc(collection(gameRef, "players"), props.playerDocId)
     const {
         // rename the Ref to something more meaningful
@@ -87,6 +89,12 @@ onMounted(async () => {
             // ... other options
         }).toDataUriSync();
         console.log(newPlayer.avatarSeed)
+    })
+    watch(game.data, async (newGame, oldGame) => {
+        alert("change")
+        if(newGame.inGame && !oldGame.inGame) {
+            alert("The game has started WOOO!")
+        }
     })
 })
 async function randomizeAvatar() {

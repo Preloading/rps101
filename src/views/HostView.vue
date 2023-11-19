@@ -26,7 +26,7 @@ function getGameDoc(data) {
     gameDocId = data;
 }
 function setHostState(data) {
-    hostStatus = data;
+    hostStatus.value = data;
     console.log(data)
 }
 
