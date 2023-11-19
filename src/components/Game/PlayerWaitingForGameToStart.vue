@@ -37,6 +37,7 @@ import { botttsNeutral, bottts, identicon, thumbs, pixelArt } from '@dicebear/co
 import { ref, onMounted, watch } from "vue";
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
+const emit = defineEmits(["game-state"])
 
 var isLoaded = ref(false);
 var username = ref("This should not be visble.")
@@ -45,7 +46,12 @@ var playerRef;
 
 onMounted(async () => {
     const gameRef = doc(gamesRef, props.gameDocId)
-    const game = useDocument(gamesRef)
+    const {
+        // rename the Ref to something more meaningful
+        data: game,
+        // A promise that resolves or rejects when the initial state is loaded
+        promise: gamePromise,
+    } = useDocument(gameRef)
     playerRef = doc(collection(gameRef, "players"), props.playerDocId)
     const {
         // rename the Ref to something more meaningful
@@ -90,10 +96,11 @@ onMounted(async () => {
         }).toDataUriSync();
         console.log(newPlayer.avatarSeed)
     })
-    watch(game.data, async (newGame, oldGame) => {
-        alert("change")
-        if(newGame.inGame && !oldGame.inGame) {
-            alert("The game has started WOOO!")
+    watch(game, async (newGame, oldGame) => {
+        await gamePromise;
+        console.log("GameData Updated")
+        if(newGame.inGame == true && oldGame.inGame == false) {
+            emit("game-state", 2)
         }
     })
 })

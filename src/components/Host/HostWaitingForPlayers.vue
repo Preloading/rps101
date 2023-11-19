@@ -49,7 +49,7 @@ async function startGame() {
     await updateDoc(gameRef, {
         inGame: true
     })
-    alert("in game")
+
     emit("host-state", 3);
 
 }

@@ -16,6 +16,17 @@
     </div>
 </template>
 <script setup>
-import outcomes from "../../../assets/results.json"
-alert(outcomes)
+import outcomes from "../../../assets/outcomes/data.json"
+console.log(outcomes[player1result].compares);
+function getWinner(player1result, player2result) {
+    if (outcomes[player1result].compares.filter(e => e.other_gesture_id === player2result)) {
+        return 1;
+    } else {
+        if (outcomes[player2result].compares.filter(e => e.other_gesture_id === player1result)) {
+            return 0;
+        } else {
+            return 2;
+        }
+    }
+}
 </script>
