@@ -20,7 +20,7 @@
                 
                 
             </div>
-         </div>
+        </div>
          <div class="text-center fs-2">
             <p>You're in!</p>
             <p>Wait for the host to start the game!</p>

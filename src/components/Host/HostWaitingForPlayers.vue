@@ -13,10 +13,9 @@
                 </span>
             </div>
         </nav>
-        <ul v-if="players.length != 0" class="list-group list-group-horizontal" v-for="player in players" :key="player.id">
-            <li class="">
-                <ConnectedUsers :player-doc="player" :players-ref="playersRef"  />
-            </li>
+        <ul v-if="players.length != 0" class="d-flex flex-wrap" >
+                <ConnectedUsers :player-doc="player" :players-ref="playersRef" v-for="player in players" :key="player.id"  />
+            
         </ul>
         <div v-else>
             <p class="text-center fs-3">No players yet... Go invite some people!</p>
