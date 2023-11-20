@@ -3,7 +3,7 @@
         <h1>Game view</h1>
         <EnterUsername v-if="gameState == 0" @player-doc-id="getPlayerDoc" @game-state="setGameState" @game-doc-id="getGameDoc"/>
         <PlayerWaitingForGameToStart v-else-if="gameState == 1" @game-state="setGameState" :game-doc-id="gameDocId" :player-doc-id="playerDocId"/>
-        <PlayerInGame v-else-if="gameState == 2"/>
+        <PlayerInGame v-else-if="gameState == 2" :game-doc-id="gameDocId" :player-doc-id="playerDocId"/>
     </div>
 </template>
 <script setup>
