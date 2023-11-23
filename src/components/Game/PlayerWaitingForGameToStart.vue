@@ -81,7 +81,7 @@ onMounted(async () => {
                 return botttsNeutral;
         }
     }
-    // cool seeds: 720, TEMP, 10
+    // cool seeds: 720, TEMP, 10 687
     avatar.value = createAvatar(getStyleFromNumber(player.value.avatarStyle), {
         seed: player.value.avatarSeed,
         size: 128,
