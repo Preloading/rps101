@@ -17,8 +17,8 @@
                 <li>Make it yourself (this is open-source) <a href="https://github.com/Preloading/rps101">here!</a> (and send a pull request!)</li>
                 <li>Email me at: <a href="mailto:webmaster@loganserver.net">webmaster@loganserver.net</a> and maybe I'll add your mode</li>
                 <li>Play the online version promoted by the creator of RPS101 by Adem Clement <a href="https://rps101.pythonanywhere.com/">here!</a></li>
-                <li>You can see the outcomems in an easy, interactable way <a href="https://www.umop.com/rps101/1.htm">here</a>, starting with Dynamite</li>
-                <li>And if you're old-school, there is a printable version <a href="https://www.umop.com/rps101/alloutcomes.htm">here</a> which is where the outcomes are from.</li>
+                <li>You can see the outcomems in an easy, interactable way <a href="https://www.umop.com/rps101/1.htm">here</a>, starting with Dynamite (this is where the outcomes are from)</li>
+                <li>And if you're old-school, there is a printable version <a href="https://www.umop.com/rps101/alloutcomes.htm">here</a></li>
             </ul>
         </P>
         <p>Questions? Concerns? Email Me: webmaster@loganserver.net</p>
