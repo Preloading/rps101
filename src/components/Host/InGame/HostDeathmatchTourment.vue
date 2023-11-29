@@ -1,67 +1,31 @@
 <template>
-  <bracket :rounds="rounds">
-    <template #player="{ player }"> {{ player.name }} </template>
-  </bracket>
+   <div>
+     <h1>AAAAAAAAA</h1>
+   </div>
 </template>
 
-<script lang="ts">
-  import { defineComponent } from 'vue';
-  import Bracket from '@/Bracket.vue';
+<script>
+//sort(() => Math.random() - 0.5)
+import { useCollection } from 'vuefire'
+import { collection, doc, orderBy, query,updateDoc } from 'firebase/firestore'
+import { gamesRef } from '../../../firebase.js'
+console.log(-3)
 
-  export default defineComponent({
-    name: 'App',
-    components: {
-      Bracket,
-    },
-    setup() {
-      const rounds = [
-        //Quarter
-        {
-          games: [
-            {
-              player1: { id: '1', name: 'Competitor 1', winner: true },
-              player2: { id: '2', name: 'Competitor 2', winner: false },
-            },
-            {
-              player1: { id: '3', name: 'Competitor 3', winner: false },
-              player2: { id: '4', name: 'Competitor 4', winner: true },
-            },
-            {
-              player1: { id: '5', name: 'Competitor 5', winner: true },
-              player2: { id: '6', name: 'Competitor 6', winner: false },
-            },
-            {
-              player1: { id: '7', name: 'Competitor 7', winner: false },
-              player2: { id: '8', name: 'Competitor 8', winner: true },
-            },
-          ],
-        },
-        //Semi
-        {
-          games: [
-            {
-              player1: { id: '1', name: 'Competitor 1', winner: false },
-              player2: { id: '4', name: 'Competitor 4', winner: true },
-            },
-            {
-              player1: { id: '5', name: 'Competitor 5', winner: false },
-              player2: { id: '8', name: 'Competitor 8', winner: true },
-            },
-          ],
-        },
-        //Final
-        {
-          games: [
-            {
-              player1: { id: '4', name: 'Competitor 4', winner: false },
-              player2: { id: '8', name: 'Competitor 8', winner: true },
-            },
-          ],
-        },
-      ];
-      return {
-        rounds,
-      };
-    },
-  });
+const props = defineProps(["game-doc-id"]);
+//const emit = defineEmits(["host-state"])
+console.log(-2)
+
+console.log(props.gameDocId)
+const gameRef = doc(gamesRef, props.gameDocId)
+const playersRef = collection(gameRef, "players")
+const players = useCollection(query(playersRef, orderBy("timestamp")))
+alert(1);
+// Create the matches
+const matchedPlayers = players.data.value.sort(() => Math.random() - 0.5); // Sort players
+if (matchedPlayers.length % 2 == 0) {
+   // TODO: add Evilbot
+}
+alert(matchedPlayers[1].id)
+ 
+
 </script>
