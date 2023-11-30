@@ -80,6 +80,7 @@ onMounted(async () => {
             avatarSeed: "TEMP",
             avatarStyle: "1",
             timestamp: serverTimestamp(),
+            matchVersion: 0
         })
         //deleteDoc(doc(collection(createdGame, "players"), "TEMP"))
     }

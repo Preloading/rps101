@@ -1,17 +1,27 @@
 <template>
    <div>
       <h1>this does init stuff at first, may take a tiny bit to load, loading screen todo lol</h1>
-      <bracket :rounds="rounds">
+      <!-- <bracket :rounds="rounds">
          <template #player="{ player }"> {{ player.name }} </template>
-      </bracket>
+      </bracket> -->
+      <div v-for="match in matches" :key="match.id">
+         <!-- <ConnectedUsers :player-doc="useDocument(doc(playersRef, match.player1id))"/>
+         <h2>VS.</h2>
+         <ConnectedUsers :player-doc="useDocument(doc(playersRef, match.player2id))"/> -->
+            <div>
+               hmm? <h2>if this works ima be happy {{ match.player1id }} vs {{ match.player2id }}</h2>
+            </div>
+
+      </div>
    </div>
 </template>
 
 <script setup>
 import outcomes from "../../../assets/outcomes/data.json"
+import ConnectedUsers from "../ConnectedUsers.vue"
 
 //sort(() => Math.random() - 0.5)
-import { useCollection } from 'vuefire'
+import { useCollection, useDocument } from 'vuefire'
 import { collection, doc, orderBy, query,updateDoc, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore'
 import { gamesRef } from '../../../firebase.js'
 import { onMounted } from 'vue';
@@ -20,7 +30,12 @@ import { onMounted } from 'vue';
 
 const props = defineProps(["game-doc-id"]);
 //const emit = defineEmits(["host-state"])
-
+const gameRef = doc(gamesRef, props.gameDocId)
+   const playersRef = collection(gameRef, "players")
+   const players = useCollection(query(playersRef, orderBy("timestamp")))
+   const matchesRef = collection(gameRef, "matches")
+   const matches = useCollection(matchesRef)
+   
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -76,12 +91,9 @@ const rounds = [
 
 onMounted(async () => {
    console.log(props.gameDocId)
-   const gameRef = doc(gamesRef, props.gameDocId)
-   const playersRef = collection(gameRef, "players")
-   const players = useCollection(query(playersRef, orderBy("timestamp")))
-   const matchesRef = collection(gameRef, "matches")
-   const matches = useCollection(query(matchesRef, orderBy("timestamp")))
+
    await players.promise.value;
+   await matches.promise.value;
    // Create the matches
 
    // Sort players
@@ -89,25 +101,26 @@ onMounted(async () => {
 
    shuffleArray(matchedPlayers);
    console.log(matchedPlayers)
-   if (matchedPlayers.length % 2 == 0) {
-      // TODO: add Evilbot
-      await addDoc(playersRef, {
-            displayName: "Evilbot",
-            userId: "EVILBOT",
-            avatarSeed: "Casper", // One of the examples
-            avatarStyle: "1",
-            timestamp: serverTimestamp(),
-      }) // Later maybe add a detection to stop people from naming themselves evilbot or smth, or something else to indicate a player as AI
-   }
+   // if (matchedPlayers.length % 2 == 0) {
+   //    // TODO: add Evilbot
+   //    await addDoc(playersRef, {
+   //          displayName: "Evilbot",
+   //          userId: "EVILBOT",
+   //          avatarSeed: "Casper", // One of the examples
+   //          avatarStyle: "1",
+   //          timestamp: serverTimestamp(),
+   //    }) // Later maybe add a detection to stop people from naming themselves evilbot or smth, or something else to indicate a player as AI
+   // } 
    console.log(matchedPlayers[1].id)
    // Delete old matches
-   matches.data.value.forEach(element => {
-      deleteDoc(doc(element.id, matchesRef))
+   matches.data.value.forEach(async element => {
+      await deleteDoc(doc(matchesRef, element.id))
    });
    
    for (var i = 0; i < matchedPlayers.length; i = i+2) {
       console.log(i)
-      if (i > matchedPlayers.length) {
+      if (!(i+1 > matchedPlayers.length)) { // TODO: figure out this god dam if statement
+         //console.log(matchedPlayers[i].id)
          addDoc(matchesRef, {
             player1id: matchedPlayers[i].id,
             player1choice: 0,
@@ -117,6 +130,8 @@ onMounted(async () => {
             id: i/2
          })
       } else {
+         
+         //console.log(matchedPlayers[i].id)
          addDoc(matchesRef, {
             player1id: matchedPlayers[i].id,
             player1choice: 0,
@@ -128,7 +143,9 @@ onMounted(async () => {
       }
       
    }
-
+   console.log("to suffer or not to suffer sigh123")
+   await matches.promise.value;
+   console.log(matches.data.value.length)
 })
 async function setMatches() {
    await players.promise.value;
@@ -150,7 +167,7 @@ async function setMatches() {
    });
    for (var i = 0; i < winnerUsers.length; i = i+2) {
       console.log(i)
-      if (i >= winnerUsers.length) {
+      if (!(i+1 > matchedPlayers.length)) {
          addDoc(matchesRef, {
             player1id: winnerUsers[i].id,
             player1choice: 0,
@@ -172,6 +189,7 @@ async function setMatches() {
       }
       
    }
+   
    async function findWinners() {
       await matches.promise.value;
       matches.data.value.forEach(element => {
