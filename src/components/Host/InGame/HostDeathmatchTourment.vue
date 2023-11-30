@@ -101,10 +101,13 @@ onMounted(async () => {
    }
    console.log(matchedPlayers[1].id)
    // Delete old matches
+   matches.data.value.forEach(element => {
+      deleteDoc(doc(element.id, matchesRef))
+   });
    
    for (var i = 0; i < matchedPlayers.length; i = i+2) {
       console.log(i)
-      if (i >= matchedPlayers.length) {
+      if (i > matchedPlayers.length) {
          addDoc(matchesRef, {
             player1id: matchedPlayers[i].id,
             player1choice: 0,
@@ -172,7 +175,7 @@ async function setMatches() {
    async function findWinners() {
       await matches.promise.value;
       matches.data.value.forEach(element => {
-         outcomes[element.player1choice]
+         outcomes[element.player1choice].compares
          
       });
    }
