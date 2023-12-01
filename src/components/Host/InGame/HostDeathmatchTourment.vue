@@ -5,11 +5,12 @@
          <template #player="{ player }"> {{ player.name }} </template>
       </bracket> -->
       <div v-for="match in matches" :key="match.id">
-         <!-- <ConnectedUsers :player-doc="useDocument(doc(playersRef, match.player1id))"/>
-         <h2>VS.</h2>
-         <ConnectedUsers :player-doc="useDocument(doc(playersRef, match.player2id))"/> -->
+         
             <div>
                hmm? <h2>if this works ima be happy {{ match.player1id }} vs {{ match.player2id }}</h2>
+               <ConnectedUsers :player-doc="getDocumentOfUserFromId(match.player1id)" :players-ref="playersRef"/>
+               <h2>VS.</h2>
+               <ConnectedUsers :player-doc="getDocumentOfUserFromId(match.player1id)" :players-ref="playersRef"/>
             </div>
 
       </div>
@@ -197,6 +198,12 @@ async function setMatches() {
          
       });
    }
+}
+
+async function getDocumentOfUserFromId(userId) {
+   let userDocument = useDocument(doc(playersRef, userId));
+   await userDocument.promise.value;
+   return userDocument;
 }
 
 </script>
