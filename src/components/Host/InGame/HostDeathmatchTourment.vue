@@ -8,9 +8,9 @@
          
             <div>
                hmm? <h2>if this works ima be happy {{ match.player1id }} vs {{ match.player2id }}</h2>
-               <ConnectedUsers :player-doc="getDocumentOfUserFromId(match.player1id)" :players-ref="playersRef"/>
-               <h2>VS.</h2>
-               <ConnectedUsers :player-doc="getDocumentOfUserFromId(match.player1id)" :players-ref="playersRef"/>
+               <MatchedUser :player-id="match.player1id" :players-ref="playersRef"/>
+               <h2>VS. </h2>
+               <MatchedUser :player-doc="match.player2id" :players-ref="playersRef"/>
             </div>
 
       </div>
@@ -19,7 +19,7 @@
 
 <script setup>
 import outcomes from "../../../assets/outcomes/data.json"
-import ConnectedUsers from "../ConnectedUsers.vue"
+import MatchedUser from "./MatchedUser.vue"
 
 //sort(() => Math.random() - 0.5)
 import { useCollection, useDocument } from 'vuefire'
