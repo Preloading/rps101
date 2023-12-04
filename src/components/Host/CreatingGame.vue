@@ -80,7 +80,7 @@ onMounted(async () => {
             avatarSeed: "TEMP",
             avatarStyle: "1",
             timestamp: serverTimestamp(),
-            matchVersion: 0
+            matchVersion: 0 // for people who have no idea about what this means, it's what change each one is at, so all clients know to recheck the matches, it's basically a "hey i've changed the match data, go check"
         })
         //deleteDoc(doc(collection(createdGame, "players"), "TEMP"))
     }

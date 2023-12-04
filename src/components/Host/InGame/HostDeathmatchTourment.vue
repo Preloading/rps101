@@ -32,10 +32,11 @@ import { onMounted } from 'vue';
 const props = defineProps(["game-doc-id"]);
 //const emit = defineEmits(["host-state"])
 const gameRef = doc(gamesRef, props.gameDocId)
+const game = useDocument(gameRef);
    const playersRef = collection(gameRef, "players")
    const players = useCollection(query(playersRef, orderBy("timestamp")))
    const matchesRef = collection(gameRef, "matches")
-   const matches = useCollection(matchesRef)
+   const matches = useCollection(query(matchesRef, orderBy("place")))
    
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -128,7 +129,7 @@ onMounted(async () => {
             player2id: "EVILBOT",
             player2choice: 0,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
-            id: i/2
+            place: i/2
          })
       } else {
          
@@ -139,12 +140,11 @@ onMounted(async () => {
             player2id: matchedPlayers[i+1].id,
             player2choice: 0,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
-            id: i/2
+            place: i/2
          })
       }
       
    }
-   console.log("to suffer or not to suffer sigh123")
    await matches.promise.value;
    console.log(matches.data.value.length)
 })
@@ -175,8 +175,8 @@ async function setMatches() {
             player2id: "EVILBOT",
             player2choice: 0,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
-            whyWinner: ["Draw!"],
-            id: i/2
+            //whyWinner: ["Draw!"],
+            place: i/2
          })
       } else {
          addDoc(matchesRef, {
@@ -185,31 +185,28 @@ async function setMatches() {
             player2id: winnerUsers[i+1].id,
             player2choice: 0,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
-            id: i/2
+            place: i/2
          })
       }
       
    }
-   
+    updateDoc(gameRef, {
+      matchVersion: game.data.value.matchVersion + 1
+    })
    async function findWinners() {
       await matches.promise.value;
       matches.data.value.forEach(element => {
          if (element.player2id == "EVILBOT") {
             // TODO: Make evilbot always loose. (he looses always to make sure that players think they are really good against him)
             //outcomes[element.player1choice].compares
-         } else {
-            outcomes[element.player1choice].compares
+         } else if (outcomes[element.player1choice].compares.some(e => e.other_gesture_id == element.player2choice)) {
+            
+
+         } else if (outcomes[element.player2choice].compares.some(e => e.other_gesture_id == element.player1choice)) {
+            
          }
-         
-         
       });
    }
+   
 }
-
-async function getDocumentOfUserFromId(userId) {
-   let userDocument = useDocument(doc(playersRef, userId));
-   await userDocument.promise.value;
-   return userDocument;
-}
-
 </script>

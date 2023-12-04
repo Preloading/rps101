@@ -7,8 +7,8 @@
         </div>
         <h2>VS</h2>
         <div class="rounded waitingPlayer">
-            <img :alt="username + '\'s avatar'" :src="avatar" class="col rounded" > 
-            <span class="usernameHost">{{ username }}</span>
+            <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
+            <span class="usernameHost">{{ opponentUsername }}</span>
         </div>
         <ul class="d-flex flex-wrap">
             <button v-for='outcome in outcomes' class="list-unstyled text-center btn" @click="() => {selectMove(outcome.id)}">
@@ -24,7 +24,7 @@
 import outcomes from "../../../assets/outcomes/data.json"
 
 import { useCollection, useDocument } from 'vuefire'
-import { collection, doc, updateDoc } from 'firebase/firestore'
+import { collection, doc, query, orderBy, updateDoc } from 'firebase/firestore'
 import { gamesRef } from '../../../firebase.js'
 import { createAvatar } from '@dicebear/core';
 import { botttsNeutral, bottts, identicon, thumbs, pixelArt } from '@dicebear/collection';
@@ -33,13 +33,18 @@ import { ref, onMounted, watch } from "vue";
 var isLoaded = ref(false);
 var username = ref("This should not be visble.")
 var avatar = ref("");
+var opponentUsername = ref("Opponent")
+var opponentAvatar = ref("");
 var playerRef;
+let chosenOption
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 
 
 onMounted(async () => {
     const gameRef = doc(gamesRef, props.gameDocId)
+    const matchesRef = collection(gameRef, "matches")
+    const matches = useCollection(query(matchesRef, orderBy("place")))
     const {
         // rename the Ref to something more meaningful
         data: game,
@@ -96,6 +101,9 @@ onMounted(async () => {
         // if(newGame.inGame == true && oldGame.inGame == false) {
         //     emit("game-state", 2)
         // }
+        if (newGame.matchVersion != oldGame.matchVersion) {
+            updateMatchedPlayer()
+        }
     })
 })
 
@@ -108,6 +116,36 @@ function getWinner(player1result, player2result) {
         } else {
             return 2;
         }
+    }
+}
+async function updateMatchedPlayer() {
+    await matches.promise.value
+    let matchId = matches.data.value.findIndex(e => e.player1id === player.value.id);
+    if (matchId == -1) {
+        let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
+        if (matchId == -1) {
+            // TODO: handle loss
+            alert("you loose ig")
+        } else {
+            const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player1id)
+            const opponentPlayer = useDocument(opponentPlayerRef)
+            //console.log(matches.data.value[matchId].player2id.value.id)
+            opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
+                seed: opponentPlayer.data.value.avatarSeed,
+                size: 128,
+                // ... other options
+            }).toDataUriSync();
+        }
+
+    } else {
+        const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player2id)
+            const opponentPlayer = useDocument(opponentPlayerRef)
+            //console.log(matches.data.value[matchId].player2id.value.id)
+            opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
+                seed: opponentPlayer.data.value.avatarSeed,
+                size: 128,
+                // ... other options
+            }).toDataUriSync();
     }
 }
 function selectMove(moveId) {
