@@ -12,19 +12,27 @@ import { useCollection, useDocument } from 'vuefire';
 import { doc } from '@firebase/firestore';
 
 const props = defineProps(["playerId", "playersRef"])
-if (props.playerId == "EVILBOT") {
-    const username = "Evilbot"
-    var avatar = ref(createAvatar(getStyleFromNumber("Casper"), {
-        seed: player.avatarSeed,
+
+let username = ref("loading")
+let avatar = ref("")
+//console.log(props.playerId)
+if (props.playerId == "EVILBOT" || props.playerId === undefined) {
+    username = "Evilbot"
+    avatar = ref(createAvatar(getStyleFromNumber(1), {
+        seed: "Casper",
         size: 64,
         // ... other options
     }).toDataUriSync());
+    if (props.playerId === undefined) {
+        console.error("PlayerID is undefined! This will almost certainly cause issues, but I have saved it for now. Please save everything in the console, and write a bug report at https://github.com/Preloading/rps101")
+    }
 
 } else {
     const playerRef = doc(props.playersRef, props.playerId)
     const player = useDocument(playerRef);
-    const username = ref(player.displayName);
-    var avatar = ref(createAvatar(getStyleFromNumber(player.avatarStyle), {
+
+    username = player.data.value.displayName;
+    avatar = ref(createAvatar(getStyleFromNumber(player.avatarStyle), {
         seed: player.avatarSeed,
         size: 64,
         // ... other options
@@ -32,7 +40,6 @@ if (props.playerId == "EVILBOT") {
 
     watch(player, async (newPlayer, oldPlayer) => {
         await player.promise.value;
-        console.log(player.data.value.avatarSeed)
         avatar.value = await createAvatar(getStyleFromNumber(player.data.value.avatarStyle), {
             seed: player.data.value.avatarSeed,
             size: 64,
@@ -42,7 +49,6 @@ if (props.playerId == "EVILBOT") {
 }
 
 
-console.log("a");
 function getStyleFromNumber(style) {
     switch (style) {
         case 1:

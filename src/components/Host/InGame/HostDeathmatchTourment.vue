@@ -7,10 +7,10 @@
       <div v-for="match in matches" :key="match.id">
          
             <div>
-               hmm? <h2>if this works ima be happy {{ match.player1id }} vs {{ match.player2id }}</h2>
+               <h2>IDs {{ match.player1id }} vs {{ match.player2id }}</h2>
                <MatchedUser :player-id="match.player1id" :players-ref="playersRef"/>
                <h2>VS. </h2>
-               <MatchedUser :player-doc="match.player2id" :players-ref="playersRef"/>
+               <MatchedUser :player-id="match.player2id" :players-ref="playersRef"/>
             </div>
 
       </div>
@@ -120,7 +120,7 @@ onMounted(async () => {
    
    for (var i = 0; i < matchedPlayers.length; i = i+2) {
       console.log(i)
-      if (!(i+1 > matchedPlayers.length)) { // TODO: figure out this god dam if statement
+      if (i >= matchedPlayers.length - 1) { // TODO: figure out this god dam if statement
          //console.log(matchedPlayers[i].id)
          addDoc(matchesRef, {
             player1id: matchedPlayers[i].id,
@@ -168,7 +168,7 @@ async function setMatches() {
    });
    for (var i = 0; i < winnerUsers.length; i = i+2) {
       console.log(i)
-      if (!(i+1 > matchedPlayers.length)) {
+      if (i >= matchedPlayers.length - 1) {
          addDoc(matchesRef, {
             player1id: winnerUsers[i].id,
             player1choice: 0,
@@ -194,7 +194,13 @@ async function setMatches() {
    async function findWinners() {
       await matches.promise.value;
       matches.data.value.forEach(element => {
-         outcomes[element.player1choice].compares
+         if (element.player2id == "EVILBOT") {
+            // TODO: Make evilbot always loose. (he looses always to make sure that players think they are really good against him)
+            //outcomes[element.player1choice].compares
+         } else {
+            outcomes[element.player1choice].compares
+         }
+         
          
       });
    }
