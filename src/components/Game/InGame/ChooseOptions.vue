@@ -40,17 +40,20 @@ let chosenOption
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 
-
 onMounted(async () => {
     const gameRef = doc(gamesRef, props.gameDocId)
+    console.log(1)
     const matchesRef = collection(gameRef, "matches")
+    console.log(2)
     const matches = useCollection(query(matchesRef, orderBy("place")))
+    console.log(3)
     const {
         // rename the Ref to something more meaningful
         data: game,
         // A promise that resolves or rejects when the initial state is loaded
         promise: gamePromise,
     } = useDocument(gameRef)
+    console.log(4)
     playerRef = doc(collection(gameRef, "players"), props.playerDocId)
     const {
         // rename the Ref to something more meaningful
@@ -58,6 +61,7 @@ onMounted(async () => {
         // A promise that resolves or rejects when the initial state is loaded
         promise: playerPromise,
     } = useDocument(playerRef)
+    console.log(5)
     await playerPromise.value;
     // User stuff
     console.log(player)
@@ -101,6 +105,8 @@ onMounted(async () => {
         // if(newGame.inGame == true && oldGame.inGame == false) {
         //     emit("game-state", 2)
         // }
+        console.log(newGame.matchVersion.value)
+        console.log(oldGame.matchVersion.value)
         if (newGame.matchVersion != oldGame.matchVersion) {
             updateMatchedPlayer()
         }

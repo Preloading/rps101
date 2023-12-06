@@ -145,8 +145,13 @@ onMounted(async () => {
       }
       
    }
-   await matches.promise.value;
-   console.log(matches.data.value.length)
+   setTimeout(async() => {
+      await matches.promise.value;
+      updateDoc(gameRef, {
+         matchVersion: game.data.value.matchVersion + 1
+      })
+      console.log(matches.data.value.length)
+   }, 500);
 })
 async function setMatches() {
    await players.promise.value;
