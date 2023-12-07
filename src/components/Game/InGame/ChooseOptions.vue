@@ -36,7 +36,7 @@ var avatar = ref("");
 var opponentUsername = ref("Opponent")
 var opponentAvatar = ref("");
 var playerRef;
-let chosenOption
+let chosenOption = ref(0)
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 
@@ -45,7 +45,7 @@ onMounted(async () => {
     console.log(1)
     const matchesRef = collection(gameRef, "matches")
     console.log(2)
-    const matches = useCollection(query(matchesRef, orderBy("place")))
+    const matches = useCollection(matchesRef)
     console.log(3)
     const {
         // rename the Ref to something more meaningful
@@ -68,22 +68,7 @@ onMounted(async () => {
     console.log(player.value)
     username.value = player.value.displayName
 
-    function getStyleFromNumber(style) {
-        switch (style) {
-            case 1:
-                return botttsNeutral;
-            case 2:
-                return bottts;
-            case 3:
-                return identicon;
-            case 4:
-                return pixelArt;
-            case 5:
-                return thumbs
-            default:
-                return botttsNeutral;
-        }
-    }
+    
     // cool seeds: 720, TEMP, 10
     avatar.value = createAvatar(getStyleFromNumber(player.value.avatarStyle), {
         seed: player.value.avatarSeed,
@@ -99,61 +84,93 @@ onMounted(async () => {
         // }).toDataUriSync();
         // console.log(newPlayer.avatarSeed)
     })
+    watch(chosenOption, async (newOption, oldOption) => {
+        
+    })
     watch(game, async (newGame, oldGame) => {
-        // await gamePromise;
-        // console.log("GameData Updated")
-        // if(newGame.inGame == true && oldGame.inGame == false) {
-        //     emit("game-state", 2)
-        // }
         console.log(newGame.matchVersion.value)
         console.log(oldGame.matchVersion.value)
         if (newGame.matchVersion != oldGame.matchVersion) {
             updateMatchedPlayer()
         }
     })
+    function getWinner(player1result, player2result) {
+        if (outcomes[player1result].compares.filter(e => e.other_gesture_id === player2result)) {
+            return 1;
+        } else {
+            if (outcomes[player2result].compares.filter(e => e.other_gesture_id === player1result)) {
+                return 0;
+            } else {
+                return 2;
+            }
+        }
+    }
+    async function updateMatchedPlayer() {
+        await matches.promise.value
+        let matchId = matches.data.value.findIndex(e => e.player1id === player.value.id);
+        if (matchId == -1) {
+            let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
+            if (matchId == -1) {
+                // TODO: handle loss
+                alert("you loose ig")
+            } else {
+                const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player1id)
+                const opponentPlayer = useDocument(opponentPlayerRef)
+                //console.log(matches.data.value[matchId].player2id.value.id)
+                opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
+                    seed: opponentPlayer.data.value.avatarSeed,
+                    size: 128,
+                    // ... other options
+                }).toDataUriSync();
+                opponentUsername = opponentPlayer.data.value.displayName;
+            }
+
+        } else {
+            const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player2id)
+                const opponentPlayer = useDocument(opponentPlayerRef)
+                //console.log(matches.data.value[matchId].player2id.value.id)
+                opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
+                    seed: opponentPlayer.data.value.avatarSeed,
+                    size: 128,
+                    // ... other options
+                }).toDataUriSync();
+                opponentUsername = opponentPlayer.data.value.displayName;
+        }
+    }
+    function getMatchIdFromPlayerId(playerId) {
+        let matchId = matches.data.value.findIndex(e => e.player1id === player.value.id);
+        if (matchId == -1) {
+            let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
+            if (matchId == -1) {
+                return null;
+            } else {
+                return matches.data.value[matchId].player1id
+            }
+
+        } else {
+            return matches.data.value[matchId].player2id
+        }
+    }
 })
 
-function getWinner(player1result, player2result) {
-    if (outcomes[player1result].compares.filter(e => e.other_gesture_id === player2result)) {
-        return 1;
-    } else {
-        if (outcomes[player2result].compares.filter(e => e.other_gesture_id === player1result)) {
-            return 0;
-        } else {
-            return 2;
-        }
-    }
-}
-async function updateMatchedPlayer() {
-    await matches.promise.value
-    let matchId = matches.data.value.findIndex(e => e.player1id === player.value.id);
-    if (matchId == -1) {
-        let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
-        if (matchId == -1) {
-            // TODO: handle loss
-            alert("you loose ig")
-        } else {
-            const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player1id)
-            const opponentPlayer = useDocument(opponentPlayerRef)
-            //console.log(matches.data.value[matchId].player2id.value.id)
-            opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
-                seed: opponentPlayer.data.value.avatarSeed,
-                size: 128,
-                // ... other options
-            }).toDataUriSync();
-        }
 
-    } else {
-        const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player2id)
-            const opponentPlayer = useDocument(opponentPlayerRef)
-            //console.log(matches.data.value[matchId].player2id.value.id)
-            opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
-                seed: opponentPlayer.data.value.avatarSeed,
-                size: 128,
-                // ... other options
-            }).toDataUriSync();
+function getStyleFromNumber(style) {
+    switch (style) {
+        case 1:
+            return botttsNeutral;
+        case 2:
+            return bottts;
+        case 3:
+            return identicon;
+        case 4:
+            return pixelArt;
+        case 5:
+            return thumbs
+        default:
+            return botttsNeutral;
     }
 }
+
 function selectMove(moveId) {
     console.log(moveId)
 }
