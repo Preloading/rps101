@@ -38,40 +38,34 @@ var username = ref("This should not be visble.")
 var avatar = ref("");
 var opponentUsername = ref("Opponent")
 var opponentAvatar = ref("");
-var playerRef;
 let chosenOption = ref(0)
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
-
-const isItemSelected = 
-
+const gameRef = doc(gamesRef, props.gameDocId)
+const matchesRef = collection(gameRef, "matches")
+let matches = useCollection(matchesRef)
+const playerRef = doc(collection(gameRef, "players"), props.playerDocId)
+const {
+    // rename the Ref to something more meaningful
+    data: game,
+    // A promise that resolves or rejects when the initial state is loaded
+    promise: gamePromise,
+} = useDocument(gameRef)
+const {
+    // rename the Ref to something more meaningful
+    data: player,
+    // A promise that resolves or rejects when the initial state is loaded
+    promise: playerPromise,
+} = useDocument(playerRef)
 
 onMounted(async () => {
-    const gameRef = doc(gamesRef, props.gameDocId)
-    console.log(1)
-    const matchesRef = collection(gameRef, "matches")
-    console.log(2)
-    const matches = useCollection(matchesRef)
-    console.log(3)
-    const {
-        // rename the Ref to something more meaningful
-        data: game,
-        // A promise that resolves or rejects when the initial state is loaded
-        promise: gamePromise,
-    } = useDocument(gameRef)
-    console.log(4)
-    playerRef = doc(collection(gameRef, "players"), props.playerDocId)
-    const {
-        // rename the Ref to something more meaningful
-        data: player,
-        // A promise that resolves or rejects when the initial state is loaded
-        promise: playerPromise,
-    } = useDocument(playerRef)
-    console.log(5)
+    await gamePromise.value;
+    await matches.promise.value;
     await playerPromise.value;
+    
     // User stuff
-    console.log(player)
-    console.log(player.value)
+    // console.log(player)
+    // console.log(player.value)
     username.value = player.value.displayName
 
     
@@ -112,10 +106,12 @@ onMounted(async () => {
     async function updateMatchedPlayer() {
         await matches.promise.value
         let opponentPlayerId = getMatchedOpponentIdFromPlayerId(player.value.id)
+        console.log(2)
         if (opponentPlayerId == null) {
             // TODO: handle loss, this could also mean worse if they are still in.
             alert("you loose ig")
         } else {
+            console.log(3)
             const opponentPlayerRef = doc(collection(gameRef, "players"), opponentPlayerId)
             const opponentPlayer = useDocument(opponentPlayerRef)
 
@@ -157,6 +153,41 @@ onMounted(async () => {
             return matchId;
         }
     }
+    async function setMoveFromPlayer(matchId, playerId, move) {
+        let matchRef = doc(matchesRef, "matchId")
+        let match = useDocument(); //findIndex(e => e.player1id === playerId));
+        await match.promise.value;
+        // if (match.error.value) { //Todo figure out how to catch errors
+            
+        // }
+        if (match.data.value.player1id == playerid) {
+            updateDoc(gameRef, {
+                player1choice: move,
+                player1chosen: true
+            })
+
+        } else if (match.data.value.player2id == playerid) {
+            updateDoc(gameRef, {
+                player2choice: move,
+                player2chosen: true
+            })
+
+        } else {
+            console.error("Player ID not present in match!")
+        }
+        //     let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
+        //     if (matchId == -1) {
+        //         return null;
+        //     } else {
+        //         return matchId;
+        //     }
+
+        // } else {
+        //     return matchId;
+        // }
+    }
+    
+    
 })
 
 
@@ -179,5 +210,16 @@ function getStyleFromNumber(style) {
 
 function selectMove(moveId) {
     console.log(moveId)
+    chosenOption.value = moveId
+    console.log(1)
+    let matchId =  getMatchIdFromPlayerId(player.value.id);
+    console.log(3)
+    if (matchId == null) {
+        return; //Not in match so exit.
+    }
+    console.log(4)
+    setMoveFromPlayer(matchId, player.value.id, moveId)
+    console.log("set the move :D")
 }
+
 </script>

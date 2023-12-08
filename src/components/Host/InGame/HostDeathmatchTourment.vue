@@ -126,8 +126,10 @@ onMounted(async () => {
          addDoc(matchesRef, {
             player1id: matchedPlayers[i].id,
             player1choice: 0,
+            player1chosen: false,
             player2id: "EVILBOT",
             player2choice: 0,
+            player2chosen: false,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
             place: i/2
          })
@@ -137,8 +139,10 @@ onMounted(async () => {
          addDoc(matchesRef, {
             player1id: matchedPlayers[i].id,
             player1choice: 0,
+            player1chosen: false,
             player2id: matchedPlayers[i+1].id,
             player2choice: 0,
+            player2chosen: false,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
             place: i/2
          })
@@ -177,8 +181,10 @@ async function setMatches() {
          addDoc(matchesRef, {
             player1id: winnerUsers[i].id,
             player1choice: 0,
+            player1chosen: false,
             player2id: "EVILBOT",
             player2choice: 0,
+            player2chosen: false,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
             //whyWinner: ["Draw!"],
             place: i/2
@@ -187,8 +193,10 @@ async function setMatches() {
          addDoc(matchesRef, {
             player1id: winnerUsers[i].id,
             player1choice: 0,
+            player1chosen: false,
             player2id: winnerUsers[i+1].id,
             player2choice: 0,
+            player2chosen: false,
             winner: 0, // 0 = not determined, 1 = win for player 1, 2 = win for player 2
             place: i/2
          })
