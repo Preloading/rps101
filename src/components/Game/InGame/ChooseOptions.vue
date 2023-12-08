@@ -4,11 +4,13 @@
         <div class="rounded waitingPlayer">
             <img alt="Your Avatar" :src="avatar" class="col rounded"> 
             <span class="usernameHost">{{ username }}</span>
+            <p>{{ playerSelected }}</p>
         </div>
         <h2>VS</h2>
         <div class="rounded waitingPlayer">
             <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
             <span class="usernameHost">{{ opponentUsername }}</span>
+            <p>{{ opponentSelected }}</p>
         </div>
         <ul class="d-flex flex-wrap">
             <button v-for='outcome in outcomes' class="list-unstyled text-center btn" @click="() => {selectMove(outcome.id)}" > 
@@ -116,6 +118,8 @@ onMounted(async () => {
         } else {
             const opponentPlayerRef = doc(collection(gameRef, "players"), opponentPlayerId)
             const opponentPlayer = useDocument(opponentPlayerRef)
+
+            await opponentPlayer.promise.value;
             //console.log(matches.data.value[matchId].player2id.value.id)
             opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
                 seed: opponentPlayer.data.value.avatarSeed,
@@ -130,13 +134,27 @@ onMounted(async () => {
         if (matchId == -1) {
             let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
             if (matchId == -1) {
-                return null;
+                return null; // Means that the player probably lost, or it can't find the match id
             } else {
                 return matches.data.value[matchId].player1id
             }
 
         } else {
             return matches.data.value[matchId].player2id
+        }
+    }
+    function getMatchIdFromPlayerId(playerId) {
+        let matchId = matches.data.value.findIndex(e => e.player1id === playerId);
+        if (matchId == -1) {
+            let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
+            if (matchId == -1) {
+                return null;
+            } else {
+                return matchId;
+            }
+
+        } else {
+            return matchId;
         }
     }
 })
