@@ -11,7 +11,8 @@
             <span class="usernameHost">{{ opponentUsername }}</span>
         </div>
         <ul class="d-flex flex-wrap">
-            <button v-for='outcome in outcomes' class="list-unstyled text-center btn" @click="() => {selectMove(outcome.id)}">
+            <button v-for='outcome in outcomes' class="list-unstyled text-center btn" @click="() => {selectMove(outcome.id)}" > 
+                <!-- todo fix this: :class="{ 'btn-primary': computed((outcomeId) => {return 1 == 2 })}" -->
                     <img :src="'/outcomes/' + outcome.img" class="m-1" style="height: 64px; width: 64px;">
                     <p class="text-center">{{ outcome.title.charAt(0).toUpperCase() + outcome.title.slice(1) }}</p>
                 
@@ -28,7 +29,7 @@ import { collection, doc, query, orderBy, updateDoc } from 'firebase/firestore'
 import { gamesRef } from '../../../firebase.js'
 import { createAvatar } from '@dicebear/core';
 import { botttsNeutral, bottts, identicon, thumbs, pixelArt } from '@dicebear/collection';
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 
 var isLoaded = ref(false);
 var username = ref("This should not be visble.")
@@ -39,6 +40,9 @@ var playerRef;
 let chosenOption = ref(0)
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
+
+const isItemSelected = 
+
 
 onMounted(async () => {
     const gameRef = doc(gamesRef, props.gameDocId)
@@ -88,8 +92,6 @@ onMounted(async () => {
         
     })
     watch(game, async (newGame, oldGame) => {
-        console.log(newGame.matchVersion.value)
-        console.log(oldGame.matchVersion.value)
         if (newGame.matchVersion != oldGame.matchVersion) {
             updateMatchedPlayer()
         }
@@ -107,38 +109,24 @@ onMounted(async () => {
     }
     async function updateMatchedPlayer() {
         await matches.promise.value
-        let matchId = matches.data.value.findIndex(e => e.player1id === player.value.id);
-        if (matchId == -1) {
-            let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
-            if (matchId == -1) {
-                // TODO: handle loss
-                alert("you loose ig")
-            } else {
-                const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player1id)
-                const opponentPlayer = useDocument(opponentPlayerRef)
-                //console.log(matches.data.value[matchId].player2id.value.id)
-                opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
-                    seed: opponentPlayer.data.value.avatarSeed,
-                    size: 128,
-                    // ... other options
-                }).toDataUriSync();
-                opponentUsername = opponentPlayer.data.value.displayName;
-            }
-
+        let opponentPlayerId = getMatchedOpponentIdFromPlayerId(player.value.id)
+        if (opponentPlayerId == null) {
+            // TODO: handle loss, this could also mean worse if they are still in.
+            alert("you loose ig")
         } else {
-            const opponentPlayerRef = doc(collection(gameRef, "players"), matches.data.value[matchId].player2id)
-                const opponentPlayer = useDocument(opponentPlayerRef)
-                //console.log(matches.data.value[matchId].player2id.value.id)
-                opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
-                    seed: opponentPlayer.data.value.avatarSeed,
-                    size: 128,
-                    // ... other options
-                }).toDataUriSync();
-                opponentUsername = opponentPlayer.data.value.displayName;
+            const opponentPlayerRef = doc(collection(gameRef, "players"), opponentPlayerId)
+            const opponentPlayer = useDocument(opponentPlayerRef)
+            //console.log(matches.data.value[matchId].player2id.value.id)
+            opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
+                seed: opponentPlayer.data.value.avatarSeed,
+                size: 128,
+                // ... other options
+            }).toDataUriSync();
+            opponentUsername = opponentPlayer.data.value.displayName;
         }
     }
-    function getMatchIdFromPlayerId(playerId) {
-        let matchId = matches.data.value.findIndex(e => e.player1id === player.value.id);
+    function getMatchedOpponentIdFromPlayerId(playerId) {
+        let matchId = matches.data.value.findIndex(e => e.player1id === playerId);
         if (matchId == -1) {
             let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
             if (matchId == -1) {
