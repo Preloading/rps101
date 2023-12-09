@@ -29,6 +29,7 @@ function createGame() {
     
 }
 async function joinGame() {
+    gameCode.value = gameCode.value.toUpperCase(); // Fix uppercase issues and such.
     if (await checkCode(gameCode.value))
     {
         // This should mean that the game exists in the database, but might already be started, or has finished, so we need to check if it's started, and if it's done

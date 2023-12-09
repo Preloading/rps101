@@ -43,6 +43,12 @@ const props = defineProps(["player-doc-id", "game-doc-id"]);
 const gameRef = doc(gamesRef, props.gameDocId)
 const matchesRef = collection(gameRef, "matches")
 let matches = useCollection(matchesRef)
+
+let matchId// = getMatchIdFromPlayerId(player.value.id)
+let matchRef// = doc(matchesRef, matchId)
+let match// = useDocument(matchRef);
+
+
 const playerRef = doc(collection(gameRef, "players"), props.playerDocId)
 const {
     // rename the Ref to something more meaningful
@@ -83,9 +89,7 @@ onMounted(async () => {
         // }).toDataUriSync();
         // console.log(newPlayer.avatarSeed)
     })
-    watch(chosenOption, async (newOption, oldOption) => {
-        
-    })
+    
     watch(game, async (newGame, oldGame) => {
         if (newGame.matchVersion != oldGame.matchVersion) {
             updateMatchedPlayer()
@@ -219,5 +223,6 @@ function selectMove(moveId) {
     }
     setMoveFromPlayer(matchId, player.value.id, moveId)
 }
+
 
 </script>
