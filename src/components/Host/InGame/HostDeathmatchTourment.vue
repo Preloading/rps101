@@ -151,10 +151,11 @@ onMounted(async () => {
    }
    setTimeout(async() => {
       await matches.promise.value;
+      console.log(game.data.value.matchVersion)
       updateDoc(gameRef, {
          matchVersion: game.data.value.matchVersion + 1
       })
-      console.log(matches.data.value.length)
+      console.log(game.data.value.length)
    }, 500);
 })
 async function setMatches() {

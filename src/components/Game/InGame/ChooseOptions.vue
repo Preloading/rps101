@@ -4,13 +4,11 @@
         <div class="rounded waitingPlayer">
             <img alt="Your Avatar" :src="avatar" class="col rounded"> 
             <span class="usernameHost">{{ username }}</span>
-            <p>{{ playerSelected }}</p>
         </div>
-        <h2>VS</h2>
+        <h2>{{ statusText }}</h2>
         <div class="rounded waitingPlayer">
             <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
             <span class="usernameHost">{{ opponentUsername }}</span>
-            <p>{{ opponentSelected }}</p>
         </div>
         <ul class="d-flex flex-wrap">
             <button v-for='outcome in outcomes' class="list-unstyled text-center btn" @click="() => {selectMove(outcome.id)}" > 
@@ -39,6 +37,7 @@ var avatar = ref("");
 var opponentUsername = ref("Opponent")
 var opponentAvatar = ref("");
 let chosenOption = ref(0)
+let statusText = ref("VS")
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 const gameRef = doc(gamesRef, props.gameDocId)
@@ -139,42 +138,7 @@ onMounted(async () => {
             return matches.data.value[matchId].player2id
         }
     }
-    function getMatchIdFromPlayerId(playerId) {
-        let matchId = matches.data.value.findIndex(e => e.player1id === playerId);
-        if (matchId == -1) {
-            let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
-            if (matchId == -1) {
-                return null;
-            } else {
-                return matchId;
-            }
-
-        } else {
-            return matchId;
-        }
-    }
-    async function setMoveFromPlayer(matchId, playerId, move) {
-        let matchRef = doc(matchesRef, "matchId")
-        let match = useDocument(); //findIndex(e => e.player1id === playerId));
-        await match.promise.value;
-        // if (match.error.value) { //Todo figure out how to catch errors
-            
-        // }
-        if (match.data.value.player1id == playerid) {
-            updateDoc(gameRef, {
-                player1choice: move,
-                player1chosen: true
-            })
-
-        } else if (match.data.value.player2id == playerid) {
-            updateDoc(gameRef, {
-                player2choice: move,
-                player2chosen: true
-            })
-
-        } else {
-            console.error("Player ID not present in match!")
-        }
+    
         //     let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
         //     if (matchId == -1) {
         //         return null;
@@ -185,7 +149,7 @@ onMounted(async () => {
         // } else {
         //     return matchId;
         // }
-    }
+    
     
     
 })
@@ -208,18 +172,52 @@ function getStyleFromNumber(style) {
     }
 }
 
+
+
+function getMatchIdFromPlayerId(playerId) {
+    let matchId = matches.data.value.findIndex(e => e.player1id === playerId);
+    if (matchId == -1) {
+        let matchId = matches.data.value.findIndex(e => e.player2id === player.value.id);
+        if (matchId == -1) {
+            return null;
+        } else {
+            return matches.data.value[matchId].id;
+        }
+
+    } else {
+        return matches.data.value[matchId].id;
+    }
+}
+async function setMoveFromPlayer(matchId, playerId, move) {
+    let matchRef = doc(matchesRef, matchId)
+    let match = useDocument(matchRef); //findIndex(e => e.player1id === playerId));
+    await match.promise.value;
+    // if (match.error.value) { //Todo figure out how to catch errors
+        
+    // }
+    if (match.data.value.player1id == playerId) {
+        updateDoc(matchRef, {
+            player1choice: move,
+            player1chosen: true
+        })
+
+    } else if (match.data.value.player2id == playerId) {
+        updateDoc(matchRef, {
+            player2choice: move,
+            player2chosen: true
+        })
+
+    } else {
+        console.error("Player ID not present in match!")
+    }
+}
 function selectMove(moveId) {
-    console.log(moveId)
     chosenOption.value = moveId
-    console.log(1)
     let matchId =  getMatchIdFromPlayerId(player.value.id);
-    console.log(3)
     if (matchId == null) {
         return; //Not in match so exit.
     }
-    console.log(4)
     setMoveFromPlayer(matchId, player.value.id, moveId)
-    console.log("set the move :D")
 }
 
 </script>
