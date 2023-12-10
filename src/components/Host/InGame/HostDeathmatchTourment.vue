@@ -251,7 +251,8 @@ async function findWinners() {
             flippedCoin = true
          }
          updateDoc(doc(matchesRef, element.id), {
-               winner: winner
+               winner: winner,
+               flippedCoin: flippedCoin
             })
       }
       

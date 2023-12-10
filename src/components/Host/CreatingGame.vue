@@ -65,7 +65,9 @@ onMounted(async () => {
             gameType: route.query.gameType,
             inGame: false,
             timestamp: serverTimestamp(),
-            matchVersion: 0 // for people who have no idea about what this means, it's what change each one is at, so all clients know to recheck the matches, it's basically a "hey i've changed the match data, go check"
+            matchVersion: 0, // for people who have no idea about what this means, it's what change each one is at, so all clients know to recheck the matches, it's basically a "hey i've changed the match data, go check"
+            submissionLocked: true,
+            winnersVisible: false
         })
         return gameDoc
         

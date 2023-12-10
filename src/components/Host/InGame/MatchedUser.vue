@@ -2,6 +2,9 @@
     <div class="rounded waitingPlayer">
         <img :alt="username + '\'s avatar'" :src="avatar" class="col rounded"> 
         <span class="usernameHost">{{ username }}</span>
+        <img >
+        
+
     </div>
 </template>
 <script setup>
@@ -11,7 +14,7 @@ import { botttsNeutral, bottts, identicon, thumbs, pixelArt } from '@dicebear/co
 import { useCollection, useDocument } from 'vuefire';
 import { doc } from '@firebase/firestore';
 
-const props = defineProps(["playerId", "playersRef"])
+const props = defineProps(["playerId", "playersRef", "playerChoice", "isChoiceVisible"])
 
 let username = ref("loading")
 let avatar = ref("")
