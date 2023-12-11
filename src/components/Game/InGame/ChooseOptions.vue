@@ -11,18 +11,14 @@
             <span class="usernameHost">{{ opponentUsername }}</span>
         </div>
         <ul class="d-flex flex-wrap">
-            <button v-for='outcome in outcomes' class="list-unstyled text-center btn" @click="() => {selectMove(outcome.id)}" > 
-                <!-- todo fix this: :class="{ 'btn-primary': computed((outcomeId) => {return 1 == 2 })}" -->
-                    <img :src="'/outcomes/' + outcome.img" class="m-1" style="height: 64px; width: 64px;">
-                    <p class="text-center">{{ outcome.title.charAt(0).toUpperCase() + outcome.title.slice(1) }}</p>
-                
-
-            </button>
+            <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper"/> 
         </ul>
     </div>
 </template>
 <script setup>
 import outcomes from "../../../assets/outcomes/data.json"
+
+import ChoosableOption from "./ChoosableOption.vue"
 
 import { useCollection, useDocument } from 'vuefire'
 import { collection, doc, query, orderBy, updateDoc } from 'firebase/firestore'
@@ -37,6 +33,7 @@ var avatar = ref("");
 var opponentUsername = ref("Opponent")
 var opponentAvatar = ref("");
 let chosenOption = ref(0)
+const chosenOptionWrapper = () => chosenOption
 let statusText = ref("VS")
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
@@ -216,6 +213,7 @@ async function setMoveFromPlayer(matchId, playerId, move) {
     }
 }
 function selectMove(moveId) {
+    console.log("Move Selected: " + moveId)
     chosenOption.value = moveId
     let matchId =  getMatchIdFromPlayerId(player.value.id);
     if (matchId == null) {

@@ -103,16 +103,6 @@ onMounted(async () => {
 
    shuffleArray(matchedPlayers);
    console.log(matchedPlayers)
-   // if (matchedPlayers.length % 2 == 0) {
-   //    // TODO: add Evilbot
-   //    await addDoc(playersRef, {
-   //          displayName: "Evilbot",
-   //          userId: "EVILBOT",
-   //          avatarSeed: "Casper", // One of the examples
-   //          avatarStyle: "1",
-   //          timestamp: serverTimestamp(),
-   //    }) // Later maybe add a detection to stop people from naming themselves evilbot or smth, or something else to indicate a player as AI
-   // } 
    console.log(matchedPlayers[1].id)
    // Delete old matches
    matches.data.value.forEach(async element => {
