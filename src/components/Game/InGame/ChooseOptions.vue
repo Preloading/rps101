@@ -151,7 +151,14 @@ onMounted(async () => {
         //     return matchId;
         // }
     
-    
+    function generateAvatar() {
+        opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
+            seed: opponentPlayer.data.value.avatarSeed,
+            size: 128,
+            // ... other options
+        }).toDataUriSync();
+        opponentUsername = opponentPlayer.data.value.displayName;
+    }
     
 })
 
