@@ -2,7 +2,10 @@
     <div class="rounded waitingPlayer">
         <img :alt="username + '\'s avatar'" :src="avatar" class="col rounded"> 
         <span class="usernameHost">{{ username }}</span>
-        
+        <div v-if="hasRevealed">
+            <img src="moveImg">
+            <p>{{ moveText }}</p>
+        </div>
 
     </div>
 </template>
@@ -17,6 +20,7 @@ const props = defineProps(["playerId", "playersRef", "playerChoice", "isChoiceVi
 
 let username = ref("loading")
 let avatar = ref("")
+let hasRevealed = ref(props.isChoiceVisible)
 //console.log(props.playerId)
 if (props.playerId == "EVILBOT" || props.playerId === undefined) {
     username = "Evilbot"

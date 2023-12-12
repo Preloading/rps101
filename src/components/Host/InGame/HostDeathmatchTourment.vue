@@ -8,9 +8,9 @@
          
             <div>
                <h2>IDs {{ match.player1id }} vs {{ match.player2id }}</h2>
-               <MatchedUser :player-id="match.player1id" :players-ref="playersRef"/>
+               <MatchedUser :player-id="match.player1id" :players-ref="playersRef" :player-choice="match.player1choice" :is-choice-visible="isChoiceVisible"/>
                <h2>VS. </h2>
-               <MatchedUser :player-id="match.player2id" :players-ref="playersRef"/>
+               <MatchedUser :player-id="match.player2id" :players-ref="playersRef" :player-choice="match.player1choice" :is-choice-visible="isChoiceVisible"/>
             </div>
 
       </div>
@@ -25,7 +25,7 @@ import MatchedUser from "./MatchedUser.vue"
 import { useCollection, useDocument } from 'vuefire'
 import { collection, doc, orderBy, query,updateDoc, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore'
 import { gamesRef } from '../../../firebase.js'
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 
 //import Bracket from 'vue-tournament-bracket';
 
@@ -33,10 +33,14 @@ const props = defineProps(["game-doc-id"]);
 //const emit = defineEmits(["host-state"])
 const gameRef = doc(gamesRef, props.gameDocId)
 const game = useDocument(gameRef);
-   const playersRef = collection(gameRef, "players")
-   const players = useCollection(query(playersRef, orderBy("timestamp")))
-   const matchesRef = collection(gameRef, "matches")
-   const matches = useCollection(query(matchesRef, orderBy("place")))
+const playersRef = collection(gameRef, "players")
+const players = useCollection(query(playersRef, orderBy("timestamp")))
+const matchesRef = collection(gameRef, "matches")
+const matches = useCollection(query(matchesRef, orderBy("place")))
+let isChoiceVisible = computed(() => {
+   return game.data.value.submissionLocked;
+})
+let isChoiceVisibleWrapper = () => isChoiceVisible;
    
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -141,11 +145,15 @@ onMounted(async () => {
       }
       
    }
+
+   // Gameplay loop
    setTimeout(async() => {
       await matches.promise.value;
       console.log(game.data.value.matchVersion)
       updateDoc(gameRef, {
-         matchVersion: game.data.value.matchVersion + 1
+         matchVersion: game.data.value.matchVersion + 1,
+         submissionLocked: false,
+         winnersVisible: false
       })
       console.log(game.data.value.length)
       updateLoop()
@@ -153,14 +161,21 @@ onMounted(async () => {
 })
 function updateLoop() {
    console.log("Time to choose")
+   updateDoc(gameRef, {
+      submissionLocked: false,
+      winnersVisible: false
+   })
    setTimeout(async() => {
       console.log("Winners Revealed")
       findWinners()
       updateDoc(gameRef, {
-         matchVersion: game.data.value.matchVersion + 1
+         matchVersion: game.data.value.matchVersion + 1,
+         submissionLocked: true,
+         winnersVisible: true
       })
       setTimeout(async() => {
          console.log("Next Matches!")
+
          setMatches()
          updateLoop()
       }, 5000);

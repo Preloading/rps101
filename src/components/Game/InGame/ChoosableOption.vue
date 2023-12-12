@@ -43,7 +43,5 @@ function getWinner(player1result, player2result) {
    }
 }
 
-computed(() => {
- return author.books.length > 0 ? 'Yes' : 'No'
-})
+
 </script>
