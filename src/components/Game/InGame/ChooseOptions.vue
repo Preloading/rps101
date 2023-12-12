@@ -93,13 +93,22 @@ onMounted(async () => {
         }
     })
     function getWinner(player1result, player2result) {
-        if (outcomes[player1result].compares.filter(e => e.other_gesture_id === player2result)) {
+        if (player1result == 0 || player2result == 0) {
+                return 0;
+        }
+        if (player1result == 0 && player2result != 0) {
+            return 2;
+        } else if (player2result == 0 && player1result != 0) {
+            return 1;
+        }
+        
+        if (outcomes[player1result-1].compares.some((e) => e.other_gesture_id == player2result)) {
             return 1;
         } else {
-            if (outcomes[player2result].compares.filter(e => e.other_gesture_id === player1result)) {
-                return 0;
+            if (outcomes[player2result-1].compares.some((e) => e.other_gesture_id == player1result)) {
+                    return 2;
             } else {
-                return 2;
+                    return 0;
             }
         }
     }
@@ -117,12 +126,26 @@ onMounted(async () => {
 
             await opponentPlayer.promise.value;
             //console.log(matches.data.value[matchId].player2id.value.id)
-            opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
-                seed: opponentPlayer.data.value.avatarSeed,
-                size: 128,
-                // ... other options
-            }).toDataUriSync();
-            opponentUsername = opponentPlayer.data.value.displayName;
+            if (opponentPlayer.data.value.id == "EVILBOT" || opponentPlayer.data.value.id === undefined) {
+                opponentUsername = "Evilbot"
+                opponentAvatar.value = createAvatar(getStyleFromNumber(1), {
+                    seed: "Casper",
+                    size: 64,
+                    // ... other options
+                }).toDataUriSync();
+                if (props.playerId === undefined) {
+                    console.error("PlayerID is undefined! This will almost certainly cause issues, but I have saved it for now. Please save everything in the console, and write a bug report at https://github.com/Preloading/rps101")
+                }
+
+            } else {
+                opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
+                    seed: opponentPlayer.data.value.avatarSeed,
+                    size: 128,
+                    // ... other options
+                }).toDataUriSync();
+                opponentUsername = opponentPlayer.data.value.displayName;
+            }
+            
         }
     }
     function getMatchedOpponentIdFromPlayerId(playerId) {
@@ -151,14 +174,7 @@ onMounted(async () => {
         //     return matchId;
         // }
     
-    function generateAvatar() {
-        opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
-            seed: opponentPlayer.data.value.avatarSeed,
-            size: 128,
-            // ... other options
-        }).toDataUriSync();
-        opponentUsername = opponentPlayer.data.value.displayName;
-    }
+
     
 })
 

@@ -186,6 +186,11 @@ async function setMatches() {
    matches.data.value.forEach(element => {
       deleteDoc(doc(matchesRef, element.id))
    });
+   if (winnerUsers <= 1) {
+      let finalWinner = players[winnerUsers[0]].displayName;
+      alert("The game has ended! The winner was " + finalWinner + ". This is a temp win screen. To play again go back to site")
+      
+   }
    for (var i = 0; i < winnerUsers.length; i = i+2) {
       console.log(i)
       if (i >= winnerUsers.length - 1) {
@@ -249,18 +254,22 @@ async function findWinners() {
    });
 }
 function getWinner(player1result, player2result) {
+   if (player1result == 0 || player2result == 0) {
+        return 0;
+   }
    if (player1result == 0 && player2result != 0) {
       return 2;
    } else if (player2result == 0 && player1result != 0) {
       return 1;
    }
-   if (outcomes[player1result].compares.some(e => e.other_gesture_id === player2result)) {
+   
+   if (outcomes[player1result-1].compares.some((e) => e.other_gesture_id == player2result)) {
       return 1;
    } else {
-      if (outcomes[player2result].compares.some(e => e.other_gesture_id === player1result)) {
-            return 0;
-      } else {
+      if (outcomes[player2result-1].compares.some((e) => e.other_gesture_id == player1result)) {
             return 2;
+      } else {
+            return 0;
       }
    }
 }
