@@ -2,7 +2,6 @@
     <div class="rounded waitingPlayer">
         <img :alt="username + '\'s avatar'" :src="avatar" class="col rounded"> 
         <span class="usernameHost">{{ username }}</span>
-        <img >
         
 
     </div>

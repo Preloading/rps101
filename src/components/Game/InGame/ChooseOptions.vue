@@ -93,7 +93,7 @@ onMounted(async () => {
         }
     })
     function getWinner(player1result, player2result) {
-        if (player1result == 0 || player2result == 0) {
+        if (player1result == 0 && player2result == 0) {
                 return 0;
         }
         if (player1result == 0 && player2result != 0) {
