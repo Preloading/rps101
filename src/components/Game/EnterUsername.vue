@@ -1,7 +1,7 @@
 <template>
     <div>
         <input v-model="username" @submit="joinGame" class="form-text" placeholder="Username">
-        <button @click="joinGame" class="btn btn-primary">Join Game</button>
+        <button @click="joinGame" class="btn btn-primary" :disabled="isJoining">Join Game</button>
     </div>
 </template>
 <script setup>
@@ -15,6 +15,7 @@ const route = useRoute();
 const router = useRouter();
 const emit = defineEmits(["player-doc-id", "game-doc-id", "game-state"])
 const username = ref("")
+let isJoining = ref(false)
 
 checkIdIsValid();
 
@@ -35,6 +36,7 @@ async function checkIdIsValid() {
 
 
 async function joinGame() {
+    isJoining = true;
     async function checkName(name) {
         const nameCheck = query(playersRef, where("displayName", "==", name))
         const allUsersWithName = await getCountFromServer(nameCheck)

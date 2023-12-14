@@ -203,7 +203,7 @@ async function setMatches() {
    matches.data.value.forEach(element => {
       deleteDoc(doc(matchesRef, element.id))
    });
-   if (winnerUsers <= 1) {
+   if (winnerUsers.length <= 1) {
       let finalWinner = players[winnerUsers[0]].displayName;
       alert("The game has ended! The winner was " + finalWinner + ". This is a temp win screen. To play again go back to site")
       
@@ -341,5 +341,5 @@ function getComputedMatchStatus(match) {
             return "VS."          
       }
    // })
-}
+   }
 </script>

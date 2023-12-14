@@ -1,5 +1,5 @@
 <template>
-    <button class="list-unstyled text-center btn" @click="() => { emits('selectMove', props.outcome.id) }" :class="{ 'btn-primary': isSelected, 'btn-outline-success': willWinAgainstSelected, 'btn-outline-danger': willLoseAgainstSelected}" > 
+    <button class="list-unstyled text-center btn" @click="() => { emits('selectMove', props.outcome.id) }" :class="{ 'btn-primary': isSelected, 'btn-outline-success': willWinAgainstSelected, 'btn-outline-danger': willLoseAgainstSelected}" :disabled="props.isLocked" > 
         <!-- todo fix this: :class="{ 'btn-primary': computed((outcomeId) => {return 1 == 2 })}" -->
         <img :src="'/outcomes/' + props.outcome.img" class="m-1" style="height: 64px; width: 64px;">
         <p class="text-center">{{ props.outcome.title.charAt(0).toUpperCase() + props.outcome.title.slice(1) }}</p>
@@ -12,7 +12,7 @@ import outcomes from "../../../assets/outcomes/data.json"
 
 import { computed } from "vue";
 
-const props = defineProps(["outcome", "currentlySelected"])
+const props = defineProps(["outcome", "currentlySelected", "isLocked"])
 const emits = defineEmits(["selectMove"])
 
 let selectedMove = props.currentlySelected()

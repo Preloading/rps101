@@ -11,7 +11,7 @@
             <span class="usernameHost">{{ opponentUsername }}</span>
         </div>
         <ul class="d-flex flex-wrap">
-            <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper"/> 
+            <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper" :isLocked="isLocked"/> 
         </ul>
     </div>
 </template>
@@ -34,7 +34,8 @@ var opponentUsername = ref("Opponent")
 var opponentAvatar = ref("");
 let chosenOption = ref(0)
 const chosenOptionWrapper = () => chosenOption
-let statusText = ref("VS")
+
+
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 const gameRef = doc(gamesRef, props.gameDocId)
@@ -43,7 +44,7 @@ let matches = useCollection(matchesRef)
 
 let matchId// = getMatchIdFromPlayerId(player.value.id)
 let matchRef// = doc(matchesRef, matchId)
-let match// = useDocument(matchRef);
+let match;// = useDocument(matchRef);
 
 
 const playerRef = doc(collection(gameRef, "players"), props.playerDocId)
@@ -60,6 +61,60 @@ const {
     promise: playerPromise,
 } = useDocument(playerRef)
 
+let isOptionsLocked = computed(async () => {
+    await gamePromise;
+    return game.value.submissionLocked;
+})
+
+
+let statusText = computed(() => { 
+    if (game.data.value.winnersVisible) {
+        if ((match.player1choice == 0 || match.player2choice == 0) && (match.player1id == "EVILBOT" || match.player2id == "EVILBOT")) {
+            if (match.player2id == "EVILBOT") {
+                return "coinflipped and won against";
+            } else if (match.player1id == "EVILBOT") {
+                return "coinflipped and lost against";
+            }
+        }
+        if (match.player1choice == 0 && match.player2choice != 0) {
+            return outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + 
+                outcomes[match.player2choice -1].title.slice(1) + 
+                " has won by default";
+        } else if (match.player2choice == 0 && match.player1choice != 0) {
+            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + 
+                outcomes[match.player1choice -1].title.slice(1) + 
+                " has won by default";
+        }
+        if (match.winner == 1) {
+            if (match.flippedCoin) {
+                return "coinflipped and won against";
+            }
+        
+            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + 
+                outcomes[match.player1choice -1].title.slice(1) + " " + 
+                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
+                outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
+                outcomes[match.player2choice -1].title.slice(1) + " " +
+                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
+        } else if (match.winner == 2) {
+            if (match.flippedCoin) {
+                return "coinflipped and lost against"
+            }
+        
+            return outcomes[match.player1choice].title.charAt(0).toUpperCase() + 
+                outcomes[match.player1choice -1].title.slice(1) + " " + 
+                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
+                outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
+                outcomes[match.player2choice -1].title.slice(1) + " " +
+                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
+        } else {
+            return "VS."
+        }  
+    } else {
+        return "VS."          
+    }
+ })
+ 
 onMounted(async () => {
     await gamePromise.value;
     await matches.promise.value;
@@ -243,5 +298,6 @@ function selectMove(moveId) {
     setMoveFromPlayer(matchId, player.value.id, moveId)
 }
 
-
+ 
+   
 </script>
