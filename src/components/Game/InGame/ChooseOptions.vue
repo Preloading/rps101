@@ -121,23 +121,21 @@ onMounted(async () => {
             alert("you loose ig")
         } else {
             console.log(3)
-            const opponentPlayerRef = doc(collection(gameRef, "players"), opponentPlayerId)
-            const opponentPlayer = useDocument(opponentPlayerRef)
-
-            await opponentPlayer.promise.value;
+            
             //console.log(matches.data.value[matchId].player2id.value.id)
-            if (opponentPlayer.data.value.id == "EVILBOT" || opponentPlayer.data.value.id === undefined) {
+            if (opponentPlayerId == "EVILBOT" || opponentPlayerId === undefined) {
                 opponentUsername = "Evilbot"
                 opponentAvatar.value = createAvatar(getStyleFromNumber(1), {
                     seed: "Casper",
-                    size: 64,
+                    size: 128,
                     // ... other options
                 }).toDataUriSync();
-                if (props.playerId === undefined) {
-                    console.error("PlayerID is undefined! This will almost certainly cause issues, but I have saved it for now. Please save everything in the console, and write a bug report at https://github.com/Preloading/rps101")
-                }
 
             } else {
+                const opponentPlayerRef = doc(collection(gameRef, "players"), opponentPlayerId)
+                const opponentPlayer = useDocument(opponentPlayerRef)
+
+                await opponentPlayer.promise.value;
                 opponentAvatar.value = createAvatar(getStyleFromNumber(opponentPlayer.data.value.avatarStyle), {
                     seed: opponentPlayer.data.value.avatarSeed,
                     size: 128,

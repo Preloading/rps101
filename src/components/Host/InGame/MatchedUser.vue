@@ -2,15 +2,18 @@
     <div class="rounded waitingPlayer">
         <img :alt="username + '\'s avatar'" :src="avatar" class="col rounded"> 
         <span class="usernameHost">{{ username }}</span>
-        <div v-if="hasRevealed">
-            <img src="moveImg">
+        <div v-if="props.isChoiceVisible && playerChoice != 0">
+            <img :src="moveImg">
             <p>{{ moveText }}</p>
+            <p>visible</p>
         </div>
 
     </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue'
+import outcomes from "../../../assets/outcomes/data.json"
+
+import { ref, watch, computed } from 'vue'
 import { createAvatar } from '@dicebear/core';
 import { botttsNeutral, bottts, identicon, thumbs, pixelArt } from '@dicebear/collection';
 import { useCollection, useDocument } from 'vuefire';
@@ -20,7 +23,21 @@ const props = defineProps(["playerId", "playersRef", "playerChoice", "isChoiceVi
 
 let username = ref("loading")
 let avatar = ref("")
-let hasRevealed = ref(props.isChoiceVisible)
+let moveImg = computed(() => {
+    if (props.isChoiceVisible && props.playerChoice != 0) {
+        return '/outcomes/' + outcomes[props.playerChoice -1].img;
+    } else {
+        return null;
+    }
+});
+let moveText = computed(() => {
+    if (props.isChoiceVisible && props.playerChoice != 0) {
+        return outcomes[props.playerChoice -1].title.charAt(0).toUpperCase() + outcomes[props.playerChoice -1].title.slice(1);
+    } else {
+        return null;
+    }   
+});
+
 //console.log(props.playerId)
 if (props.playerId == "EVILBOT" || props.playerId === undefined) {
     username = "Evilbot"

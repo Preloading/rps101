@@ -1,6 +1,7 @@
 <template>
    <div>
       <h1>this does init stuff at first, may take a tiny bit to load, loading screen todo lol</h1>
+      {{ isChoiceVisible }}
       <!-- <bracket :rounds="rounds">
          <template #player="{ player }"> {{ player.name }} </template>
       </bracket> -->
@@ -9,8 +10,8 @@
             <div>
                <h2>IDs {{ match.player1id }} vs {{ match.player2id }}</h2>
                <MatchedUser :player-id="match.player1id" :players-ref="playersRef" :player-choice="match.player1choice" :is-choice-visible="isChoiceVisible"/>
-               <h2>VS. </h2>
-               <MatchedUser :player-id="match.player2id" :players-ref="playersRef" :player-choice="match.player1choice" :is-choice-visible="isChoiceVisible"/>
+               <h2>{{ getComputedMatchStatus(match) }}</h2>  
+               <MatchedUser :player-id="match.player2id" :players-ref="playersRef" :player-choice="match.player2choice" :is-choice-visible="isChoiceVisible"/>
             </div>
 
       </div>
@@ -37,9 +38,7 @@ const playersRef = collection(gameRef, "players")
 const players = useCollection(query(playersRef, orderBy("timestamp")))
 const matchesRef = collection(gameRef, "matches")
 const matches = useCollection(query(matchesRef, orderBy("place")))
-let isChoiceVisible = computed(() => {
-   return game.data.value.submissionLocked;
-})
+let isChoiceVisible = false;
 let isChoiceVisibleWrapper = () => isChoiceVisible;
    
 function shuffleArray(array) {
@@ -100,6 +99,10 @@ onMounted(async () => {
 
    await players.promise.value;
    await matches.promise.value;
+
+   isChoiceVisible = computed(() => {
+      return game.data.value.submissionLocked;
+   })
    // Create the matches
 
    // Sort players
@@ -155,7 +158,6 @@ onMounted(async () => {
          submissionLocked: false,
          winnersVisible: false
       })
-      console.log(game.data.value.length)
       updateLoop()
    }, 500);
 })
@@ -178,7 +180,7 @@ function updateLoop() {
 
          setMatches()
          updateLoop()
-      }, 5000);
+      }, 10000);
    }, 30000);
    
 }
@@ -248,7 +250,10 @@ async function findWinners() {
    matches.data.value.forEach(element => {
       if (element.player2id == "EVILBOT") {
          // TODO: Make evilbot always loose. (he looses always to make sure that players think they are really good against him)
-         let evilbotDesision = outcomes[element.player1choice].compares[(Math.floor(Math.random() * outcomes[element.player1choice].compares.length))].other_gesture_id;
+         let evilbotDesision = 0
+         if (element.player1choice != 0) {
+            evilbotDesision = outcomes[element.player1choice -1].compares[(Math.floor(Math.random() * outcomes[element.player1choice -1].compares.length))].other_gesture_id;
+         }
          updateDoc(doc(matchesRef, element.id), {
             player2choice: evilbotDesision,
             winner: 1
@@ -287,5 +292,54 @@ function getWinner(player1result, player2result) {
             return 0;
       }
    }
+}
+function getComputedMatchStatus(match) {
+   // return computed(() => { 
+      if (game.data.value.winnersVisible) {
+         if ((match.player1choice == 0 || match.player2choice == 0) && (match.player1id == "EVILBOT" || match.player2id == "EVILBOT")) {
+            if (match.player2id == "EVILBOT") {
+               return "coinflipped and won against";
+            } else if (match.player1id == "EVILBOT") {
+               return "coinflipped and lost against";
+            }
+         }
+         if (match.player1choice == 0 && match.player2choice != 0) {
+            return outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + 
+               outcomes[match.player2choice -1].title.slice(1) + 
+               " has won by default";
+         } else if (match.player2choice == 0 && match.player1choice != 0) {
+            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + 
+               outcomes[match.player1choice -1].title.slice(1) + 
+               " has won by default";
+         }
+         if (match.winner == 1) {
+            if (match.flippedCoin) {
+               return "coinflipped and won against";
+            }
+            
+            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + 
+               outcomes[match.player1choice -1].title.slice(1) + " " + 
+               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
+               outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
+               outcomes[match.player2choice -1].title.slice(1) + " " +
+               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
+         } else if (match.winner == 2) {
+            if (match.flippedCoin) {
+               return "coinflipped and lost against"
+            }
+            
+            return outcomes[match.player1choice].title.charAt(0).toUpperCase() + 
+               outcomes[match.player1choice -1].title.slice(1) + " " + 
+               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
+               outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
+               outcomes[match.player2choice -1].title.slice(1) + " " +
+               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
+         } else {
+            return "VS."
+         }  
+      } else {
+            return "VS."          
+      }
+   // })
 }
 </script>
