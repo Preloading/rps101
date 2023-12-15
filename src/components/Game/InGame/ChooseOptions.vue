@@ -11,7 +11,7 @@
             <span class="usernameHost">{{ opponentUsername }}</span>
         </div>
         <ul class="d-flex flex-wrap">
-            <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper" :isLocked="isOptionsLocked"/> 
+            <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper"  :disabled="isOptionsLocked"/> 
         </ul>
     </div>
 </template>
@@ -93,11 +93,12 @@ const {
     promise: playerPromise,
 } = useDocument(playerRef)
 
-let isOptionsLocked = computed(async () => {
-    await gamePromise;
-    if (game) {
-        console.log(game.value.submissionLocked)
+let isOptionsLocked = computed(() => {
+    if (game && game !== undefined) {
+        console.log("Submission Locked: " + game.value.submissionLocked)
         return game.value.submissionLocked;
+    } else {
+        return true
     }
     
 })

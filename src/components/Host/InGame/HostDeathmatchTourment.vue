@@ -101,7 +101,7 @@ onMounted(async () => {
    await matches.promise.value;
 
    isChoiceVisible = computed(() => {
-      return game.data.value.submissionLocked;
+      return game.data.value.winnersVisible;
    })
    // Create the matches
 
