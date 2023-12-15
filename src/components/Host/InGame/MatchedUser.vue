@@ -5,7 +5,6 @@
         <div v-if="props.isChoiceVisible && playerChoice != 0">
             <img :src="moveImg">
             <p>{{ moveText }}</p>
-            <p>visible</p>
         </div>
 
     </div>

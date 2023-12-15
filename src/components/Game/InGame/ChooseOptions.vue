@@ -11,7 +11,7 @@
             <span class="usernameHost">{{ opponentUsername }}</span>
         </div>
         <ul class="d-flex flex-wrap">
-            <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper" :isLocked="isLocked"/> 
+            <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper" :isLocked="isOptionsLocked"/> 
         </ul>
     </div>
 </template>
@@ -44,8 +44,40 @@ let matches = useCollection(matchesRef)
 
 let matchId// = getMatchIdFromPlayerId(player.value.id)
 let matchRef// = doc(matchesRef, matchId)
-let match;// = useDocument(matchRef);
+let match// = useDocument(matchRef);
+let isOtherChoiceVisible = ref(false)
 
+// Move Results
+
+let moveImg = computed(() => {
+    if (chosenOption.value != 0) {
+        return '/outcomes/' + outcomes[props.playerChoice -1].img;
+    } else {
+        return null;
+    }
+});
+let moveText = computed(() => {
+    if (chosenOption.value != 0) {
+        return outcomes[props.playerChoice -1].title.charAt(0).toUpperCase() + outcomes[props.playerChoice -1].title.slice(1);
+    } else {
+        return null;
+    }   
+});
+
+let opponentMoveImg = computed(() => {
+    if (isOtherChoiceVisible && chosenOption.value != 0) {
+        return '/outcomes/' + outcomes[props.playerChoice -1].img;
+    } else {
+        return null;
+    }
+});
+let opponentMoveText = computed(() => {
+    if (isOtherChoiceVisible && chosenOption.value != 0) {
+        return outcomes[props.playerChoice -1].title.charAt(0).toUpperCase() + outcomes[props.playerChoice -1].title.slice(1);
+    } else {
+        return null;
+    }   
+});
 
 const playerRef = doc(collection(gameRef, "players"), props.playerDocId)
 const {
@@ -63,12 +95,16 @@ const {
 
 let isOptionsLocked = computed(async () => {
     await gamePromise;
-    return game.value.submissionLocked;
+    if (game) {
+        console.log(game.value.submissionLocked)
+        return game.value.submissionLocked;
+    }
+    
 })
 
-
+// Get the text which shows who won (or the status of the game)
 let statusText = computed(() => { 
-    if (game.data.value.winnersVisible) {
+    if (game.data.value.winnersVisible && match) {
         if ((match.player1choice == 0 || match.player2choice == 0) && (match.player1id == "EVILBOT" || match.player2id == "EVILBOT")) {
             if (match.player2id == "EVILBOT") {
                 return "coinflipped and won against";
