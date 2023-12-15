@@ -61,7 +61,7 @@ let moveText = computed(() => {
         return outcomes[props.playerChoice -1].title.charAt(0).toUpperCase() + outcomes[props.playerChoice -1].title.slice(1);
     } else {
         return null;
-    }   
+    }
 });
 
 let opponentMoveImg = computed(() => {
@@ -101,6 +101,13 @@ let isOptionsLocked = computed(() => {
         return true
     }
     
+})
+
+watch(isOptionsLocked, async (newOptionLocked, oldOptionLocked) => {
+    if (newOptionLocked == false && oldOptionLocked == true) {
+        chosenOption = 0;
+        console.log("AAAAAAAAAAAAA")
+    }
 })
 
 // Get the text which shows who won (or the status of the game)
