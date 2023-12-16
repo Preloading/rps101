@@ -105,7 +105,7 @@ let isOptionsLocked = computed(() => {
 
 watch(isOptionsLocked, async (newOptionLocked, oldOptionLocked) => {
     if (newOptionLocked == false && oldOptionLocked == true) {
-        chosenOption = 0;
+        chosenOption.value = 0;
         console.log("AAAAAAAAAAAAA")
     }
 })
