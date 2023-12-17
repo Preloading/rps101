@@ -4,11 +4,20 @@
         <div class="rounded waitingPlayer">
             <img alt="Your Avatar" :src="avatar" class="col rounded"> 
             <span class="usernameHost">{{ username }}</span>
+            <div v-if="chosenOption != 0">
+                LET THE SUFFERING END
+                <img :src="moveImg">
+                <p>{{ moveText }}</p>
+            </div>
         </div>
         <h2>{{ statusText }}</h2>
         <div class="rounded waitingPlayer">
             <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
             <span class="usernameHost">{{ opponentUsername }}</span>
+            <div v-if="showingWinners && opponentChoice != 0">
+                <img :src="opponentMoveImg">
+                <p>{{ opponentMoveText }}</p>
+            </div>
         </div>
         <ul class="d-flex flex-wrap">
             <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper"  :disabled="isOptionsLocked"/> 
@@ -45,39 +54,25 @@ let matches = useCollection(matchesRef)
 let matchId// = getMatchIdFromPlayerId(player.value.id)
 let matchRef// = doc(matchesRef, matchId)
 let match// = useDocument(matchRef);
-let isOtherChoiceVisible = ref(false)
 
 // Move Results
 
 let moveImg = computed(() => {
     if (chosenOption.value != 0) {
-        return '/outcomes/' + outcomes[props.playerChoice -1].img;
+        return '/outcomes/' + outcomes[chosenOption.value -1].img;
     } else {
         return null;
     }
 });
 let moveText = computed(() => {
     if (chosenOption.value != 0) {
-        return outcomes[props.playerChoice -1].title.charAt(0).toUpperCase() + outcomes[props.playerChoice -1].title.slice(1);
+        return outcomes[chosenOption.value -1].title.charAt(0).toUpperCase() + outcomes[chosenOption.value -1].title.slice(1);
     } else {
         return null;
     }
 });
 
-let opponentMoveImg = computed(() => {
-    if (isOtherChoiceVisible && chosenOption.value != 0) {
-        return '/outcomes/' + outcomes[props.playerChoice -1].img;
-    } else {
-        return null;
-    }
-});
-let opponentMoveText = computed(() => {
-    if (isOtherChoiceVisible && chosenOption.value != 0) {
-        return outcomes[props.playerChoice -1].title.charAt(0).toUpperCase() + outcomes[props.playerChoice -1].title.slice(1);
-    } else {
-        return null;
-    }   
-});
+
 
 const playerRef = doc(collection(gameRef, "players"), props.playerDocId)
 const {
@@ -103,6 +98,49 @@ let isOptionsLocked = computed(() => {
     
 })
 
+let showingWinners = computed(() => {
+    if (game && game !== undefined) {
+        console.log("Showing Winners: " + game.value.winnersVisible)
+        return game.value.winnersVisible;
+    } else {
+        return true
+    }
+    
+})
+
+// Opponent Stuff
+
+let opponentChoice = computed(() => {
+    if (match != undefined) {
+        console.log(1234)
+        if (match.data.value != null) {
+            console.log("Opponent Choice: " + getOpponentChoiceFromMatch(props.playerDocId, match))
+            return getOpponentChoiceFromMatch(props.playerDocId, match)
+        }
+        
+    } else {
+        console.log("Opponent Choice: 0")
+        return 0;
+    }
+    
+})
+
+let opponentMoveImg = computed(() => {
+    if (showingWinners && opponentChoice.value != 0) {
+        return '/outcomes/' + outcomes[opponentChoice.value -1].img;
+    } else {
+        return null;
+    }
+});
+let opponentMoveText = computed(() => {
+    if (showingWinners && opponentChoice.value != 0) {
+        return outcomes[opponentChoice.value -1].title.charAt(0).toUpperCase() + outcomes[opponentChoice.value -1].title.slice(1);
+    } else {
+        return null;
+    }   
+});
+
+
 watch(isOptionsLocked, async (newOptionLocked, oldOptionLocked) => {
     if (newOptionLocked == false && oldOptionLocked == true) {
         chosenOption.value = 0;
@@ -111,14 +149,12 @@ watch(isOptionsLocked, async (newOptionLocked, oldOptionLocked) => {
 })
 
 // Get the text which shows who won (or the status of the game)
+
+//Notes chosenOption.value opponentChoice.value
 let statusText = computed(() => { 
     if (game.data.value.winnersVisible && match) {
-        if ((match.player1choice == 0 || match.player2choice == 0) && (match.player1id == "EVILBOT" || match.player2id == "EVILBOT")) {
-            if (match.player2id == "EVILBOT") {
-                return "coinflipped and won against";
-            } else if (match.player1id == "EVILBOT") {
-                return "coinflipped and lost against";
-            }
+        if ((match.data.value.player1choice == 0 || match.data.value.player2choice == 0) && (match.data.value.player1id == "EVILBOT" || match.data.value.player2id == "EVILBOT")) {
+            return "You coinflipped and won against";
         }
         if (match.player1choice == 0 && match.player2choice != 0) {
             return outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + 
@@ -275,7 +311,15 @@ onMounted(async () => {
     
 })
 
-
+function getOpponentChoiceFromMatch(playerId, passedMatch) {
+        if (passedMatch.data.value.player1id == playerId) {
+            return passedMatch.data.value.player2choice;
+        } else if (passedMatch.data.value.player2id == playerId) {
+            return passedMatch.data.value.player1choice;
+        } else {
+            return 0;
+        }
+    }
 function getStyleFromNumber(style) {
     switch (style) {
         case 1:
@@ -310,8 +354,8 @@ function getMatchIdFromPlayerId(playerId) {
     }
 }
 async function setMoveFromPlayer(matchId, playerId, move) {
-    let matchRef = doc(matchesRef, matchId)
-    let match = useDocument(matchRef); //findIndex(e => e.player1id === playerId));
+    matchRef = doc(matchesRef, matchId)
+    match = useDocument(matchRef); //findIndex(e => e.player1id === playerId));
     await match.promise.value;
     // if (match.error.value) { //Todo figure out how to catch errors
         
@@ -335,7 +379,7 @@ async function setMoveFromPlayer(matchId, playerId, move) {
 function selectMove(moveId) {
     console.log("Move Selected: " + moveId)
     chosenOption.value = moveId
-    let matchId =  getMatchIdFromPlayerId(player.value.id);
+    matchId =  getMatchIdFromPlayerId(player.value.id);
     if (matchId == null) {
         return; //Not in match so exit.
     }

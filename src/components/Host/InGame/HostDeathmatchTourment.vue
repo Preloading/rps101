@@ -1,17 +1,20 @@
 <template>
    <div>
-      <h1>this does init stuff at first, may take a tiny bit to load, loading screen todo lol</h1>
+      <!-- <h1>this does init stuff at first, may take a tiny bit to load, loading screen todo lol</h1> -->
       {{ isChoiceVisible }}
       <!-- <bracket :rounds="rounds">
          <template #player="{ player }"> {{ player.name }} </template>
       </bracket> -->
-      <div v-for="match in matches" :key="match.id">
+      <div v-for="match in matches" :key="match.id" class="my-3">
          
-            <div>
-               <h2>IDs {{ match.player1id }} vs {{ match.player2id }}</h2>
-               <MatchedUser :player-id="match.player1id" :players-ref="playersRef" :player-choice="match.player1choice" :is-choice-visible="isChoiceVisible"/>
-               <h2>{{ getComputedMatchStatus(match) }}</h2>  
-               <MatchedUser :player-id="match.player2id" :players-ref="playersRef" :player-choice="match.player2choice" :is-choice-visible="isChoiceVisible"/>
+            <div class="container-fluid">
+               <div class="row row-gap-3">
+                  <!-- <h2>IDs {{ match.player1id }} vs {{ match.player2id }}</h2> -->
+                  <MatchedUser class="col my-auto" :player-id="match.player1id" :players-ref="playersRef" :player-choice="match.player1choice" :is-choice-visible="isChoiceVisible"/>
+                  <h2 class="col text-center my-auto">{{ getComputedMatchStatus(match) }}</h2>  
+                  <MatchedUser class="col my-auto" :player-id="match.player2id" :players-ref="playersRef" :player-choice="match.player2choice" :is-choice-visible="isChoiceVisible"/>
+               </div>
+               
             </div>
 
       </div>
@@ -159,7 +162,7 @@ onMounted(async () => {
          winnersVisible: false
       })
       updateLoop()
-   }, 500);
+   }, 1000);
 })
 function updateLoop() {
    console.log("Time to choose")
@@ -204,7 +207,7 @@ async function setMatches() {
       deleteDoc(doc(matchesRef, element.id))
    });
    if (winnerUsers.length <= 1) {
-      let finalWinner = players[winnerUsers[0]].displayName;
+      let finalWinner = players.data.value[winnerUsers[0]].displayName;
       alert("The game has ended! The winner was " + finalWinner + ". This is a temp win screen. To play again go back to site")
       
    }

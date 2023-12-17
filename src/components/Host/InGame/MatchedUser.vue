@@ -2,9 +2,9 @@
     <div class="rounded waitingPlayer">
         <img :alt="username + '\'s avatar'" :src="avatar" class="col rounded"> 
         <span class="usernameHost">{{ username }}</span>
-        <div v-if="props.isChoiceVisible && playerChoice != 0">
-            <img :src="moveImg">
-            <p>{{ moveText }}</p>
+        <div v-if="props.isChoiceVisible && playerChoice != 0" class="text-end">
+            <img :src="moveImg" style="height: 64px; width: 64px;">
+            <span class="usernameHost">{{ moveText }}</span>
         </div>
 
     </div>

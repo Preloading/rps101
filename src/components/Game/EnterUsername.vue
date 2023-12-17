@@ -36,7 +36,7 @@ async function checkIdIsValid() {
 
 
 async function joinGame() {
-    isJoining = true;
+    isJoining.value = true;
     async function checkName(name) {
         const nameCheck = query(playersRef, where("displayName", "==", name))
         const allUsersWithName = await getCountFromServer(nameCheck)
