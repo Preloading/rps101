@@ -8,7 +8,7 @@
             <br>
             <span class="placeholder col-1"></span>
         </div>
-        <div v-else class="h-100 d-flex align-items-center justify-content-center flex-direction-column">
+        <div v-else class="h-100 d-flex justify-content-center flex-direction-column">
             <div class="rounded waitingPlayer" >
                 <div class="text-center">
                     <img alt="Avatar" :src="avatar" class="col rounded img-fluid">

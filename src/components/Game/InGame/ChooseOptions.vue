@@ -1,24 +1,26 @@
 <template>
     <div>
         <h1>30s</h1>
-        <div class="rounded waitingPlayer">
-            <img alt="Your Avatar" :src="avatar" class="col rounded"> 
-            <span class="usernameHost">{{ username }}</span>
-            <div v-if="chosenOption != 0">
-                LET THE SUFFERING END
-                <img :src="moveImg">
-                <p>{{ moveText }}</p>
+        <div>
+            <div class="rounded waitingPlayer">
+                <img alt="Your Avatar" :src="avatar" class="col rounded"> 
+                <p class="usernameHost">{{ username }}</p>
+                <div v-if="chosenOption != 0">
+                    <img :src="moveImg">
+                    <p>{{ moveText }}</p>
+                </div>
+            </div>
+            <h2>{{ statusText }}</h2>
+            <div class="rounded waitingPlayer">
+                <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
+                <p class="usernameHost">{{ opponentUsername }}</p>
+                <div v-if="showingWinners && opponentChoice != 0">
+                    <img :src="opponentMoveImg">
+                    <p>{{ opponentMoveText }}</p>
+                </div>
             </div>
         </div>
-        <h2>{{ statusText }}</h2>
-        <div class="rounded waitingPlayer">
-            <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
-            <span class="usernameHost">{{ opponentUsername }}</span>
-            <div v-if="showingWinners && opponentChoice != 0">
-                <img :src="opponentMoveImg">
-                <p>{{ opponentMoveText }}</p>
-            </div>
-        </div>
+        
         <ul class="d-flex flex-wrap">
             <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper"  :disabled="isOptionsLocked"/> 
         </ul>
@@ -152,41 +154,37 @@ watch(isOptionsLocked, async (newOptionLocked, oldOptionLocked) => {
 
 //Notes chosenOption.value opponentChoice.value
 let statusText = computed(() => { 
-    if (game.data.value.winnersVisible && match) {
-        if ((match.data.value.player1choice == 0 || match.data.value.player2choice == 0) && (match.data.value.player1id == "EVILBOT" || match.data.value.player2id == "EVILBOT")) {
+    if (game.value.winnersVisible && match) {
+        if (chosenOption.value == 0 && (match.data.value.player1id == "EVILBOT" || match.data.value.player2id == "EVILBOT")) {
             return "You coinflipped and won against";
         }
-        if (match.player1choice == 0 && match.player2choice != 0) {
-            return outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + 
-                outcomes[match.player2choice -1].title.slice(1) + 
-                " has won by default";
-        } else if (match.player2choice == 0 && match.player1choice != 0) {
-            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + 
-                outcomes[match.player1choice -1].title.slice(1) + 
-                " has won by default";
+        if (chosenOption.value == 0 && opponentChoice.value != 0) {
+            return "You lost by default";
+        } else if (opponentChoice.value == 0 && chosenOption.value != 0) {
+            return "You won by default";
         }
-        if (match.winner == 1) {
-            if (match.flippedCoin) {
+        if (match.data.value.winner == 1) {
+            if (match.data.value.flippedCoin) {
                 return "coinflipped and won against";
             }
         
-            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + 
-                outcomes[match.player1choice -1].title.slice(1) + " " + 
-                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
-                outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
-                outcomes[match.player2choice -1].title.slice(1) + " " +
-                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
-        } else if (match.winner == 2) {
-            if (match.flippedCoin) {
+            return outcomes[match.data.value.player1choice -1].title.charAt(0).toUpperCase() + 
+                outcomes[match.data.value.player1choice -1].title.slice(1) + " " + 
+                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb[0] + " " + 
+                outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() +
+                outcomes[match.data.value.player2choice -1].title.slice(1) + " " +
+                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb.slice(1).join(' ');
+        } else if (match.data.value.winner == 2) {
+            if (match.data.value.flippedCoin) {
                 return "coinflipped and lost against"
             }
         
-            return outcomes[match.player1choice].title.charAt(0).toUpperCase() + 
-                outcomes[match.player1choice -1].title.slice(1) + " " + 
-                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
-                outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
-                outcomes[match.player2choice -1].title.slice(1) + " " +
-                outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
+            return outcomes[match.data.value.player1choice].title.charAt(0).toUpperCase() + 
+                outcomes[match.data.value.player1choice -1].title.slice(1) + " " + 
+                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb[0] + " " + 
+                outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() +
+                outcomes[match.data.value.player2choice -1].title.slice(1) + " " +
+                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb.slice(1).join(' ');
         } else {
             return "VS."
         }  

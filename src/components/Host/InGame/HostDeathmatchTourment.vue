@@ -207,8 +207,10 @@ async function setMatches() {
       deleteDoc(doc(matchesRef, element.id))
    });
    if (winnerUsers.length <= 1) {
-      let finalWinner = players.data.value[winnerUsers[0]].displayName;
-      alert("The game has ended! The winner was " + finalWinner + ". This is a temp win screen. To play again go back to site")
+      let finalWinner = useDocument(doc(playersRef, winnerUsers[0]))
+      await finalWinner.promise.value;
+      //players.data.value[winnerUsers[0]];
+      alert("The game has ended! The winner was " + finalWinner.data.value.displayName + ". This is a temp win screen. To play again go back to main site or refresh")
       
    }
    for (var i = 0; i < winnerUsers.length; i = i+2) {
