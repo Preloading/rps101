@@ -4,7 +4,7 @@
         <div>
             <div class="rounded waitingPlayer">
                 <img alt="Your Avatar" :src="avatar" class="col rounded"> 
-                <p class="usernameHost">{{ username }}</p>
+                <span class="usernameHost">{{ username }}</span>
                 <div v-if="chosenOption != 0">
                     <img :src="moveImg">
                     <p>{{ moveText }}</p>
@@ -13,7 +13,7 @@
             <h2>{{ statusText }}</h2>
             <div class="rounded waitingPlayer">
                 <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
-                <p class="usernameHost">{{ opponentUsername }}</p>
+                <span class="usernameHost">{{ opponentUsername }}</span>
                 <div v-if="showingWinners && opponentChoice != 0">
                     <img :src="opponentMoveImg">
                     <p>{{ opponentMoveText }}</p>

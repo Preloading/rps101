@@ -5,6 +5,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { firebaseApp } from './firebase.js'
+import VueGtag from "vue-gtag";
 
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -21,5 +22,8 @@ app.use(VueFire, {
       VueFireAuth(),
     ],
   })
+app.use(VueGtag, {
+  config: { id: "G-4FHX7HGJ24 "}
+})
 
 app.mount('#app')

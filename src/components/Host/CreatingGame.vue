@@ -89,7 +89,7 @@ onMounted(async () => {
     const createdGame = await createGame()
     const createdGameId = (await createdGame).id
     for (var i=1;i<=10; i++) {
-        await createSubCollections()
+        //await createSubCollections()
     }
     
     console.log("Done Creating Game")
