@@ -1,5 +1,5 @@
 <template>
-    GAMEPLAY HAS STARTED WOOP WOOP!!!
+    <!-- GAMEPLAY HAS STARTED WOOP WOOP!!! -->
     <ChooseOptions :game-doc-id="props.gameDocId" :player-doc-id="props.playerDocId"/>
 </template>
 <script setup>

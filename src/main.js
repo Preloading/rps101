@@ -23,7 +23,7 @@ app.use(VueFire, {
     ],
   })
 app.use(VueGtag, {
-  config: { id: "G-4FHX7HGJ24 "}
+  config: { id: "G-4FHX7HGJ24"}
 })
 
 app.mount('#app')

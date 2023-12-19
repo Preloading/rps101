@@ -1,26 +1,30 @@
 <template>
     <div>
-        <h1>30s</h1>
-        <div>
-            <div class="rounded waitingPlayer">
-                <img alt="Your Avatar" :src="avatar" class="col rounded"> 
-                <span class="usernameHost">{{ username }}</span>
-                <div v-if="chosenOption != 0">
-                    <img :src="moveImg">
-                    <p>{{ moveText }}</p>
+        <!-- <h1>30s</h1> -->
+        <div class="container-fluid">
+            <div class="row row-gap-3">
+                <div class="rounded waitingPlayer col my-auto">
+                    <img alt="Your Avatar" :src="avatar" class="col rounded"> 
+                    <span class="usernameHost fs-3">{{ username }}</span>
+                    <div v-if="chosenOption != 0" class="text-end">
+                        <img :src="moveImg" style="height: 64px; width: 64px;">
+                        <span class="usernameHost">{{ moveText }}</span>
+                    </div>
                 </div>
-            </div>
-            <h2>{{ statusText }}</h2>
-            <div class="rounded waitingPlayer">
-                <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
-                <span class="usernameHost">{{ opponentUsername }}</span>
-                <div v-if="showingWinners && opponentChoice != 0">
-                    <img :src="opponentMoveImg">
-                    <p>{{ opponentMoveText }}</p>
+                <h2 class="col text-center my-auto">{{ statusText }}</h2>
+                <div class="rounded waitingPlayer col my-auto">
+                    <img :alt="opponentUsername + '\'s avatar'" :src="opponentAvatar" class="col rounded" > 
+                    <span class="usernameHost fs-3">{{ opponentUsername }}</span>
+                    <div v-if="showingWinners && opponentChoice != 0" class="text-end">
+                        <img :src="opponentMoveImg" style="height: 64px; width: 64px;">
+                        <span class="usernameHost">{{ opponentMoveText }}</span>
+                    </div>
                 </div>
             </div>
         </div>
         
+        <br>
+
         <ul class="d-flex flex-wrap">
             <ChoosableOption v-for='outcome in outcomes' @selectMove="selectMove" :outcome="outcome" :currentlySelected="chosenOptionWrapper"  :disabled="isOptionsLocked"/> 
         </ul>
