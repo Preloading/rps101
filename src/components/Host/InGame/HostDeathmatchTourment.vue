@@ -322,23 +322,23 @@ function getComputedMatchStatus(match) {
                return "coinflipped and won against";
             }
             
-            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + 
+            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 1's option
                outcomes[match.player1choice -1].title.slice(1) + " " + 
-               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
-               outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
+               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + // Gets the verb from player 1 beating player 2
+               outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 2's option
                outcomes[match.player2choice -1].title.slice(1) + " " +
-               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
+               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' '); // Puts in any remaining verbs
          } else if (match.winner == 2) {
             if (match.flippedCoin) {
                return "coinflipped and lost against"
             }
             
-            return outcomes[match.player1choice].title.charAt(0).toUpperCase() + 
-               outcomes[match.player1choice -1].title.slice(1) + " " + 
-               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + 
-               outcomes[match.player2choice -1].title.charAt(0).toUpperCase() +
-               outcomes[match.player2choice -1].title.slice(1) + " " +
-               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' ');
+            return outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 2's option
+               outcomes[match.player2choice -1].title.slice(1) + " " + 
+               outcomes[match.player2choice -1].compares.find((e) => e.other_gesture_id == match.player1choice).verb[0] + " " + // Gets the verb from player 2 beating player 1
+               outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 1's option
+               outcomes[match.player1choice -1].title.slice(1) + " " +
+               outcomes[match.player2choice -1].compares.find((e) => e.other_gesture_id == match.player1choice).verb.slice(1).join(' '); // Puts in any remaining verbs
          } else {
             return "VS."
          }  

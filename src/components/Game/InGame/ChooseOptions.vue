@@ -169,26 +169,26 @@ let statusText = computed(() => {
         }
         if (match.data.value.winner == 1) {
             if (match.data.value.flippedCoin) {
-                return "coinflipped and won against";
+                return " coinflipped and someone won ";
             }
         
-            return outcomes[match.data.value.player1choice -1].title.charAt(0).toUpperCase() + 
-                outcomes[match.data.value.player1choice -1].title.slice(1) + " " + 
-                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb[0] + " " + 
-                outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() +
-                outcomes[match.data.value.player2choice -1].title.slice(1) + " " +
-                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb.slice(1).join(' ');
+            return outcomes[match.data.value.player1choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 1's option
+               outcomes[match.data.value.player1choice -1].title.slice(1) + " " + 
+               outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb[0] + " " + // Gets the verb from player 1 beating player 2
+               outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 2's option
+               outcomes[match.data.value.player2choice -1].title.slice(1) + " " +
+               outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb.slice(1).join(' '); // Puts in any remaining verbs
         } else if (match.data.value.winner == 2) {
             if (match.data.value.flippedCoin) {
-                return "coinflipped and lost against"
+                return " coinflipped and someone won "
             }
         
-            return outcomes[match.data.value.player1choice].title.charAt(0).toUpperCase() + 
-                outcomes[match.data.value.player1choice -1].title.slice(1) + " " + 
-                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb[0] + " " + 
-                outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() +
-                outcomes[match.data.value.player2choice -1].title.slice(1) + " " +
-                outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb.slice(1).join(' ');
+            return outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 2's option
+               outcomes[match.data.value.player2choice -1].title.slice(1) + " " + 
+               outcomes[match.data.value.player2choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player1choice).verb[0] + " " + // Gets the verb from player 2 beating player 1
+               outcomes[match.data.value.player1choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 1's option
+               outcomes[match.data.value.player1choice -1].title.slice(1) + " " +
+               outcomes[match.data.value.player2choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player1choice).verb.slice(1).join(' '); // Puts in any remaining verbs
         } else {
             return "VS."
         }  
@@ -255,7 +255,7 @@ onMounted(async () => {
         console.log(2)
         if (opponentPlayerId == null) {
             // TODO: handle loss, this could also mean worse if they are still in.
-            alert("you loose ig")
+            alert("You lost (or I couldn't find the match). Please don't press OK if you lost (it will enter a bugged state) but if you are still in, press ok. This screen exists because I didn't have time to make a proper loss screen, nor proper lose logic.")
         } else {
             console.log(3)
             
