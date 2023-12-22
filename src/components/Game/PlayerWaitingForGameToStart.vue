@@ -42,6 +42,7 @@ const emit = defineEmits(["game-state"])
 var isLoaded = ref(false);
 var username = ref("This should not be visble.")
 var avatar = ref("");
+var avatarSeed = ref(0)
 var playerRef;
 
 onMounted(async () => {
@@ -58,12 +59,15 @@ onMounted(async () => {
         data: player,
         // A promise that resolves or rejects when the initial state is loaded
         promise: playerPromise,
-    } = useDocument(playerRef)
+    } = useDocument(playerRef,  {
+        once: true,
+    })
     await playerPromise.value;
     // User stuff
     console.log(player)
     console.log(player.value)
-    username.value = player.value.displayName
+    username.value = player.value.displayName;
+    avatarSeed.value = player.value.avatarSeed;
 
     function getStyleFromNumber(style) {
         switch (style) {
@@ -82,20 +86,12 @@ onMounted(async () => {
         }
     }
     // cool seeds: 720, TEMP, 10 687
-    avatar.value = createAvatar(getStyleFromNumber(player.value.avatarStyle), {
-        seed: player.value.avatarSeed,
+    avatar.value = createAvatar(getStyleFromNumber(0), {
+        seed: avatarSeed,
         size: 128,
         // ... other options
     }).toDataUriSync();
     isLoaded.value = true;
-    watch(player, async (newPlayer, oldPlayer) => {
-        avatar.value = createAvatar(getStyleFromNumber(newPlayer.avatarStyle), {
-            seed: newPlayer.avatarSeed,
-            size: 128,
-            // ... other options
-        }).toDataUriSync();
-        console.log(newPlayer.avatarSeed)
-    })
     watch(game, async (newGame, oldGame) => {
         await gamePromise;
         console.log("GameData Updated")
@@ -105,12 +101,15 @@ onMounted(async () => {
     })
 })
 async function randomizeAvatar() {
-    console.log("RANDOMIZE!!!")
+    console.log("RANDOMIZE!!!");
+    avatarSeed = Math.floor(Math.random() * 100000);
     await updateDoc(playerRef, {
-        avatarSeed: Math.floor(Math.random() * 100000)
+        avatarSeed: avatarSeed.value
     })
-}
-function changeStyle() {
-    console.log("Change Style")
+    avatar.value = createAvatar(getStyleFromNumber(1), {
+        seed: avatarSeed.value,
+        size: 128,
+        // ... other options
+    }).toDataUriSync();
 }
 </script>
