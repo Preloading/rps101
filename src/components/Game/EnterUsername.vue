@@ -67,8 +67,14 @@ async function joinGame() {
     // Verify name is not empty
     const playersRef = collection(gameDoc.ref, "players")
     const players = useCollection(playersRef)
-    if (username == "") {
+    if (username.value == "") {
         alert("Can't have an empty username!")
+        return;
+    }
+    // Check that name is not evilbot
+    if (username.value == "Evilbot") {
+        alert("Invalid Username!")
+        return;
     }
     // Maybe later crosscheck with bad word list
     // Check if name not already taken (small note, i'm probably not going to take so much effort enforcing this, people can have fun)
