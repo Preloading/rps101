@@ -38,9 +38,8 @@ const playersRef = collection(gameRef, "players")
 const players = useCollection(query(playersRef, orderBy("timestamp")))
 
 async function startGame() {
-    // TODO: Start Game
     // First check if we have at least 4 players. (subject to change)
-    if (players.value.length <= 4) {
+    if (players.value.length <= 2) {
         // Not enough players! Cannot continue.
         alert("not enough players!");
         return;
