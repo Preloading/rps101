@@ -55,7 +55,9 @@ const chosenOptionWrapper = () => chosenOption
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 const gameRef = doc(gamesRef, props.gameDocId)
 const matchesRef = collection(gameRef, "matches")
-let matches = useCollection(matchesRef)
+let matches = useCollection(matchesRef, {
+    once: true
+})
 
 let matchId// = getMatchIdFromPlayerId(player.value.id)
 let matchRef// = doc(matchesRef, matchId)
@@ -118,7 +120,6 @@ let showingWinners = computed(() => {
 
 let opponentChoice = computed(() => {
     if (match != undefined) {
-        console.log(1234)
         if (match.data.value != null) {
             console.log("Opponent Choice: " + getOpponentChoiceFromMatch(props.playerDocId, match))
             return getOpponentChoiceFromMatch(props.playerDocId, match)
@@ -150,13 +151,10 @@ let opponentMoveText = computed(() => {
 watch(isOptionsLocked, async (newOptionLocked, oldOptionLocked) => {
     if (newOptionLocked == false && oldOptionLocked == true) {
         chosenOption.value = 0;
-        console.log("AAAAAAAAAAAAA")
     }
 })
 
 // Get the text which shows who won (or the status of the game)
-
-//Notes chosenOption.value opponentChoice.value
 let statusText = computed(() => { 
     if (game.value.winnersVisible && match) {
         if (chosenOption.value == 0 && (match.data.value.player1id == "EVILBOT" || match.data.value.player2id == "EVILBOT")) {
@@ -215,41 +213,18 @@ onMounted(async () => {
         // ... other options
     }).toDataUriSync();
     isLoaded.value = true;
-    watch(player, async (newPlayer, oldPlayer) => {
-        // avatar.value = createAvatar(getStyleFromNumber(newPlayer.avatarStyle), {
-        //     seed: newPlayer.avatarSeed,
-        //     size: 128,
-        //     // ... other options
-        // }).toDataUriSync();
-        // console.log(newPlayer.avatarSeed)
-    })
     
     watch(game, async (newGame, oldGame) => {
         if (newGame.matchVersion != oldGame.matchVersion) {
             updateMatchedPlayer()
         }
     })
-    function getWinner(player1result, player2result) {
-        if (player1result == 0 && player2result == 0) {
-                return 0;
-        }
-        if (player1result == 0 && player2result != 0) {
-            return 2;
-        } else if (player2result == 0 && player1result != 0) {
-            return 1;
-        }
-        
-        if (outcomes[player1result-1].compares.some((e) => e.other_gesture_id == player2result)) {
-            return 1;
-        } else {
-            if (outcomes[player2result-1].compares.some((e) => e.other_gesture_id == player1result)) {
-                    return 2;
-            } else {
-                    return 0;
-            }
-        }
-    }
+
     async function updateMatchedPlayer() {
+        matches.
+        matches = useCollection(matchesRef, {
+            once: true
+        })
         await matches.promise.value
         let opponentPlayerId = getMatchedOpponentIdFromPlayerId(player.value.id)
         console.log(2)
@@ -378,6 +353,8 @@ async function setMoveFromPlayer(matchId, playerId, move) {
         console.error("Player ID not present in match!")
     }
 }
+
+// Selects the move
 function selectMove(moveId) {
     console.log("Move Selected: " + moveId)
     chosenOption.value = moveId

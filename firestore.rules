@@ -12,17 +12,26 @@ service cloud.firestore {
     // Make sure to write security rules for your app before that time, or else
     // all client requests to your Firestore database will be denied until you Update
     // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2023, 12, 11);
-    }
-    match /games/{game} {
+    match /games/{gameId} {
+     	match /matchVersion {
+      	allow create: if request.auth.uid == request.resource.data.hostUser;
+      	allow update: if request.auth.uid == resource.data.hostUser;
+        allow read: if true;
+      }
+      match /gameMatches {
+      	allow create: if request.auth.uid == request.resource.data.hostUser;
+        allow read: if true;
+      }
       allow create: if request.auth.uid == request.resource.data.hostUser;
       allow update: if request.auth.uid == resource.data.hostUser;
       allow read: if true;
-      match /players/{player} {
+      match /players/{playerId} {
         allow create: if request.auth.uid == request.resource.data.userId;
         allow update: if request.auth.uid == resource.data.userId;
         allow read: if true;
+      }
+      match /matches/{matchId} {
+        allow read, write: if true;
       }
     }
   }
