@@ -44,10 +44,6 @@ async function startGame() {
         alert("not enough players!");
         return;
     }
-    // Set game to started
-    await updateDoc(gameRef, {
-        inGame: true
-    })
 
     emit("host-state", 3);
 

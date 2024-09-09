@@ -3,9 +3,9 @@
         Join via code
         <input v-model="gameCode" @submit="joinGame" class="form-text" placeholder="Code">
         <button @click="joinGame" class="btn btn-primary">Join Game</button>
-        <br>
-        Join a random game
-        <button @click="joinRandom" class="btn btn-primary">Join Random Game</button>
+        <!-- <br> -->
+        <!-- Join a random game
+        <button @click="joinRandom" class="btn btn-primary">Join Random Game</button> -->
         <br>
         Or create your own game
         <button @click="createGame" class="btn btn-primary">Create Game</button>

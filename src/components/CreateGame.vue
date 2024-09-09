@@ -1,6 +1,7 @@
 <template>
     <div>
         <h2>Game Settings</h2>
+        <p>Note: These do not do anything (yet)</p>
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" v-model="gamePublic">
             <label class="form-check-label" for="flexSwitchCheckDefault" >{{ gamePublic ? "Public" : "Private" }}</label>

@@ -45,6 +45,23 @@ var avatar = ref("");
 var avatarSeed = ref(0)
 var playerRef;
 
+function getStyleFromNumber(style) {
+    switch (style) {
+        case 1:
+            return botttsNeutral;
+        case 2:
+            return bottts;
+        case 3:
+            return identicon;
+        case 4:
+            return pixelArt;
+        case 5:
+            return thumbs
+        default:
+            return botttsNeutral;
+    }
+}
+
 onMounted(async () => {
     const gameRef = doc(gamesRef, props.gameDocId)
     const {
@@ -53,44 +70,24 @@ onMounted(async () => {
         // A promise that resolves or rejects when the initial state is loaded
         promise: gamePromise,
     } = useDocument(gameRef)
+
     playerRef = doc(collection(gameRef, "players"), props.playerDocId)
     const {
         // rename the Ref to something more meaningful
         data: player,
         // A promise that resolves or rejects when the initial state is loaded
         promise: playerPromise,
-    } = useDocument(playerRef,  {
-        once: true,
-    })
+    } = useDocument(playerRef)
     await playerPromise.value;
+    
     // User stuff
     console.log(player)
     console.log(player.value)
     username.value = player.value.displayName;
     avatarSeed.value = player.value.avatarSeed;
 
-    function getStyleFromNumber(style) {
-        switch (style) {
-            case 1:
-                return botttsNeutral;
-            case 2:
-                return bottts;
-            case 3:
-                return identicon;
-            case 4:
-                return pixelArt;
-            case 5:
-                return thumbs
-            default:
-                return botttsNeutral;
-        }
-    }
-    // cool seeds: 720, TEMP, 10 687
-    avatar.value = createAvatar(getStyleFromNumber(0), {
-        seed: avatarSeed,
-        size: 128,
-        // ... other options
-    }).toDataUriSync();
+    await randomizeAvatar()
+
     isLoaded.value = true;
     watch(game, async (newGame, oldGame) => {
         await gamePromise;
@@ -104,12 +101,13 @@ async function randomizeAvatar() {
     console.log("RANDOMIZE!!!");
     avatarSeed = Math.floor(Math.random() * 100000);
     await updateDoc(playerRef, {
-        avatarSeed: avatarSeed.value
+        avatarSeed: avatarSeed
     })
     avatar.value = createAvatar(getStyleFromNumber(1), {
-        seed: avatarSeed.value,
+        seed: avatarSeed,
         size: 128,
         // ... other options
     }).toDataUriSync();
 }
+
 </script>

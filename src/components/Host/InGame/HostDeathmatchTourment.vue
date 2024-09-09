@@ -25,11 +25,15 @@
 import outcomes from "../../../assets/outcomes/data.json"
 import MatchedUser from "./MatchedUser.vue"
 
+import { createAvatar } from '@dicebear/core';
+import { botttsNeutral, bottts, identicon, thumbs, pixelArt } from '@dicebear/collection';
+
 //sort(() => Math.random() - 0.5)
 import { useCollection, useDocument } from 'vuefire'
 import { collection, doc, orderBy, query,updateDoc, addDoc, serverTimestamp, deleteDoc } from 'firebase/firestore'
 import { gamesRef } from '../../../firebase.js'
 import { onMounted, computed } from 'vue';
+const emit = defineEmits(["game-finished"])
 
 //import Bracket from 'vue-tournament-bracket';
 
@@ -159,11 +163,13 @@ onMounted(async () => {
       updateDoc(gameRef, {
          matchVersion: game.data.value.matchVersion + 1,
          submissionLocked: false,
-         winnersVisible: false
+         winnersVisible: false,
+         inGame: true
       })
       updateLoop()
    }, 1000);
 })
+
 function updateLoop() {
    console.log("Time to choose")
    updateDoc(gameRef, {
@@ -211,6 +217,15 @@ async function setMatches() {
       await finalWinner.promise.value;
       //players.data.value[winnerUsers[0]];
       alert("The game has ended! The winner was " + finalWinner.data.value.displayName + ". This is a temp win screen. To play again go back to main site or refresh")
+
+      emit("game-finished", 
+         finalWinner.data.value.displayName,
+         createAvatar(getStyleFromNumber(finalWinner.data.value.avatarStyle), {
+            seed: finalWinner.data.value.avatarSeed,
+            size: 256,
+            // ... other options
+         }).toDataUriSync()
+      )
       
    }
    for (var i = 0; i < winnerUsers.length; i = i+2) {
@@ -253,17 +268,17 @@ async function setMatches() {
 async function findWinners() {
    await matches.promise.value;
    matches.data.value.forEach(element => {
-      if (element.player2id == "EVILBOT") {
-         // TODO: Make evilbot always loose. (he looses always to make sure that players think they are really good against him)
+      if (element.player2id == "EVILBOT") { // This is specifically to handle "Evilbot", which just for making even pairs. He always loses.
          let evilbotDesision = 0
          if (element.player1choice != 0) {
-            evilbotDesision = outcomes[element.player1choice -1].compares[(Math.floor(Math.random() * outcomes[element.player1choice -1].compares.length))].other_gesture_id;
+            evilbotDesision = outcomes[element.player1choice -1].compares[(Math.floor(Math.random() * outcomes[element.player1choice -1].compares.length))].other_gesture_id; // Selects a random move that loses
          }
          updateDoc(doc(matchesRef, element.id), {
             player2choice: evilbotDesision,
             winner: 1
          })
       } else {
+         // This sorts out who won when
          let winner = getWinner(element.player1choice, element.player2choice)
          let flippedCoin = false
          if (winner == 0) {
@@ -279,6 +294,7 @@ async function findWinners() {
    });
 }
 function getWinner(player1result, player2result) {
+   // 0 is draw, 1 is player 1 win, 2 is player 2 win
    if (player1result == 0 && player2result == 0) {
         return 0;
    }
@@ -301,6 +317,7 @@ function getWinner(player1result, player2result) {
 function getComputedMatchStatus(match) {
    // return computed(() => { 
       if (game.data.value.winnersVisible) {
+         // Handle Evilbot
          if ((match.player1choice == 0 || match.player2choice == 0) && (match.player1id == "EVILBOT" || match.player2id == "EVILBOT")) {
             if (match.player2id == "EVILBOT") {
                return "coinflipped and won against";
@@ -318,27 +335,9 @@ function getComputedMatchStatus(match) {
                " has won by default";
          }
          if (match.winner == 1) {
-            if (match.flippedCoin) {
-               return "coinflipped and won against";
-            }
-            
-            return outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 1's option
-               outcomes[match.player1choice -1].title.slice(1) + " " + 
-               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb[0] + " " + // Gets the verb from player 1 beating player 2
-               outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 2's option
-               outcomes[match.player2choice -1].title.slice(1) + " " +
-               outcomes[match.player1choice -1].compares.find((e) => e.other_gesture_id == match.player2choice).verb.slice(1).join(' '); // Puts in any remaining verbs
+            return setMatchVisuals(match.player1choice, match.player2choice, match.isCoinflip)
          } else if (match.winner == 2) {
-            if (match.flippedCoin) {
-               return "coinflipped and lost against"
-            }
-            
-            return outcomes[match.player2choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 2's option
-               outcomes[match.player2choice -1].title.slice(1) + " " + 
-               outcomes[match.player2choice -1].compares.find((e) => e.other_gesture_id == match.player1choice).verb[0] + " " + // Gets the verb from player 2 beating player 1
-               outcomes[match.player1choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 1's option
-               outcomes[match.player1choice -1].title.slice(1) + " " +
-               outcomes[match.player2choice -1].compares.find((e) => e.other_gesture_id == match.player1choice).verb.slice(1).join(' '); // Puts in any remaining verbs
+            return setMatchVisuals(match.player2choice, match.player1choice, match.isCoinflip)
          } else {
             return "VS."
          }  
@@ -347,4 +346,33 @@ function getComputedMatchStatus(match) {
       }
    // })
    }
+function setMatchVisuals(winnerMove, loserMove, isCoinflip) {
+   if (isCoinflip) {
+      return "coinflipped and won against";
+   }
+   
+   return outcomes[winnerMove -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 1's option
+      outcomes[winnerMove -1].title.slice(1) + " " + 
+      outcomes[winnerMove -1].compares.find((e) => e.other_gesture_id == loserMove).verb[0] + " " + // Gets the verb from player 1 beating player 2
+      outcomes[loserMove-1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 2's option
+      outcomes[loserMove -1].title.slice(1) + " " +
+      outcomes[winnerMove -1].compares.find((e) => e.other_gesture_id == loserMove).verb.slice(1).join(' '); // Puts in any remaining verbs
+}
+
+function getStyleFromNumber(style) {
+    switch (style) {
+        case 1:
+            return botttsNeutral;
+        case 2:
+            return bottts;
+        case 3:
+            return identicon;
+        case 4:
+            return pixelArt;
+        case 5:
+            return thumbs
+        default:
+            return botttsNeutral;
+    }
+}
 </script>

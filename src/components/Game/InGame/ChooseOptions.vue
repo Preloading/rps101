@@ -166,27 +166,9 @@ let statusText = computed(() => {
             return "You won by default";
         }
         if (match.data.value.winner == 1) {
-            if (match.data.value.flippedCoin) {
-                return " coinflipped and someone won ";
-            }
-        
-            return outcomes[match.data.value.player1choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 1's option
-               outcomes[match.data.value.player1choice -1].title.slice(1) + " " + 
-               outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb[0] + " " + // Gets the verb from player 1 beating player 2
-               outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 2's option
-               outcomes[match.data.value.player2choice -1].title.slice(1) + " " +
-               outcomes[match.data.value.player1choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player2choice).verb.slice(1).join(' '); // Puts in any remaining verbs
+            return setMatchVisuals(match.data.value.player1choice, match.data.value.player2choice, match.data.value.flippedCoin)
         } else if (match.data.value.winner == 2) {
-            if (match.data.value.flippedCoin) {
-                return " coinflipped and someone won "
-            }
-        
-            return outcomes[match.data.value.player2choice -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 2's option
-               outcomes[match.data.value.player2choice -1].title.slice(1) + " " + 
-               outcomes[match.data.value.player2choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player1choice).verb[0] + " " + // Gets the verb from player 2 beating player 1
-               outcomes[match.data.value.player1choice -1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 1's option
-               outcomes[match.data.value.player1choice -1].title.slice(1) + " " +
-               outcomes[match.data.value.player2choice -1].compares.find((e) => e.other_gesture_id == match.data.value.player1choice).verb.slice(1).join(' '); // Puts in any remaining verbs
+            return setMatchVisuals(match.data.value.player2choice, match.data.value.player1choice, match.data.value.flippedCoin)
         } else {
             return "VS."
         }  
@@ -213,15 +195,17 @@ onMounted(async () => {
         // ... other options
     }).toDataUriSync();
     isLoaded.value = true;
-    
+
     watch(game, async (newGame, oldGame) => {
         if (newGame.matchVersion != oldGame.matchVersion) {
             updateMatchedPlayer()
         }
     })
-
+    if (game.value.matchVersion > 0) {
+        updateMatchedPlayer()
+    }
+    
     async function updateMatchedPlayer() {
-        matches.
         matches = useCollection(matchesRef, {
             once: true
         })
@@ -365,6 +349,18 @@ function selectMove(moveId) {
     setMoveFromPlayer(matchId, player.value.id, moveId)
 }
 
+function setMatchVisuals(winnerMove, loserMove, isCoinflip) {
+   if (isCoinflip) {
+      return "coinflipped and won against";
+   }
+   
+   return outcomes[winnerMove -1].title.charAt(0).toUpperCase() + //  Gets the capitalized name of player 1's option
+      outcomes[winnerMove -1].title.slice(1) + " " + 
+      outcomes[winnerMove -1].compares.find((e) => e.other_gesture_id == loserMove).verb[0] + " " + // Gets the verb from player 1 beating player 2
+      outcomes[loserMove-1].title.charAt(0).toUpperCase() + // Gets the capitalized name of player 2's option
+      outcomes[loserMove -1].title.slice(1) + " " +
+      outcomes[winnerMove -1].compares.find((e) => e.other_gesture_id == loserMove).verb.slice(1).join(' '); // Puts in any remaining verbs
+}
  
    
 </script>
