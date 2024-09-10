@@ -39,6 +39,9 @@ import { ref, onMounted, watch } from "vue";
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 const emit = defineEmits(["game-state"])
 
+import { useGtag } from "vue-gtag-next";
+const { event } = useGtag()
+
 var isLoaded = ref(false);
 var username = ref("This should not be visble.")
 var avatar = ref("");
@@ -79,7 +82,7 @@ onMounted(async () => {
         promise: playerPromise,
     } = useDocument(playerRef)
     await playerPromise.value;
-    
+
     // User stuff
     console.log(player)
     console.log(player.value)
@@ -103,6 +106,7 @@ async function randomizeAvatar() {
     await updateDoc(playerRef, {
         avatarSeed: avatarSeed
     })
+    event("randomized-avatar", {'avatar_style': 1, 'avatar_seed': avatarSeed})
     avatar.value = createAvatar(getStyleFromNumber(1), {
         seed: avatarSeed,
         size: 128,

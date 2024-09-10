@@ -20,10 +20,15 @@ const router = useRouter();
 var gameCode = ref("");
  //1 = quickstart, 2 = create game
 const emit = defineEmits(['enter-game-state'])
+
+import { useGtag } from "vue-gtag-next";
+const { event } = useGtag()
+
 function joinRandom() {
     console.log("Join Random Game");
 }
 function createGame() {
+    event('selected_create_game')
     console.log("Create Game")
     emit('enter-game-state', 2);
     
@@ -36,8 +41,15 @@ async function joinGame() {
         const gameDocs = await getDocs(query(gamesRef, where("code", "==", gameCode.value)))
         const gameDoc = gameDocs.docs[0]
         if (gameDoc.data.inGame) {
+            event('failed_to_join_game', {
+                'game_code': gameCode.value,
+                'why': 'Game has already started!'
+            })
             alert("game already started");
         } else {
+            event('joining_game', {
+                'game_code': gameCode.value
+            })
             router.push({
                 name: 'game',
                 query: {
@@ -48,6 +60,9 @@ async function joinGame() {
         
     } else {
         // This game does not exist
+        event('failed_to_join_game', {
+            'why': 'Game does not exist.'
+        })
         alert("not a valid game")
     }
     console.log("Join Game")

@@ -17,6 +17,9 @@ const emit = defineEmits(["player-doc-id", "game-doc-id", "game-state"])
 const username = ref("")
 let isJoining = ref(false)
 
+import { useGtag } from "vue-gtag-next";
+const { event } = useGtag()
+
 checkIdIsValid();
 
 async function checkIdIsValid() {
@@ -96,6 +99,11 @@ async function joinGame() {
         timestamp: serverTimestamp(),
     }
     const playerDoc = await addDoc(playersRef, playerData)
+    event('enter-game-waiting', {
+        'username-length': username.value.length,
+        'game-doc-id': gameDoc.id,
+        'player-doc-id': playerDoc.id
+    })
     // Go to waiting component
     emit("player-doc-id", playerDoc.id)
     emit("game-doc-id", gameDoc.id)

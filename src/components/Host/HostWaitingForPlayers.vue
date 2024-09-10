@@ -26,6 +26,9 @@
 import { useCollection } from 'vuefire'
 import { collection, doc, orderBy, query,updateDoc } from 'firebase/firestore'
 import { gamesRef } from '../../firebase.js'
+import { useGtag } from "vue-gtag-next";
+const { event } = useGtag()
+
 import ConnectedUsers from "./ConnectedUsers.vue"
 
 const props = defineProps(["game-code", "game-doc-id"]);
@@ -44,7 +47,10 @@ async function startGame() {
         alert("not enough players!");
         return;
     }
-
+    event('starting_game', {
+        'game-code': props.gameCode,
+        'amount-of-players': players.value.length
+    })
     emit("host-state", 3);
 
 }

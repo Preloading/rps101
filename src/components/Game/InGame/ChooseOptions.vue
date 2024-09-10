@@ -50,7 +50,8 @@ var opponentAvatar = ref("");
 let chosenOption = ref(0)
 const chosenOptionWrapper = () => chosenOption
 
-
+import { useGtag } from "vue-gtag-next";
+const { event } = useGtag()
 
 const props = defineProps(["player-doc-id", "game-doc-id"]);
 const gameRef = doc(gamesRef, props.gameDocId)
@@ -316,7 +317,7 @@ function getMatchIdFromPlayerId(playerId) {
 }
 async function setMoveFromPlayer(matchId, playerId, move) {
     matchRef = doc(matchesRef, matchId)
-    match = useDocument(matchRef); //findIndex(e => e.player1id === playerId));
+    match = useDocument(matchRef, {once: true}); //findIndex(e => e.player1id === playerId));
     await match.promise.value;
     // if (match.error.value) { //Todo figure out how to catch errors
         
@@ -340,6 +341,11 @@ async function setMoveFromPlayer(matchId, playerId, move) {
 
 // Selects the move
 function selectMove(moveId) {
+    event('move_selected', {
+        'game_doc_id': props["game-doc-id"],
+        'user_doc_id': props["player-doc-id"],
+        'move': moveId
+    })
     console.log("Move Selected: " + moveId)
     chosenOption.value = moveId
     matchId =  getMatchIdFromPlayerId(player.value.id);

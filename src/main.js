@@ -5,7 +5,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import { firebaseApp } from './firebase.js'
-import VueGtag from "vue-gtag";
+import VueGtag from "vue-gtag-next";
 
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -23,7 +23,10 @@ app.use(VueFire, {
     ],
   })
 app.use(VueGtag, {
-  config: { id: "G-4FHX7HGJ24"}
+  property: { 
+    id: "G-4FHX7HGJ24",
+  },
+  // useDebugger: true
+  
 })
-
 app.mount('#app')

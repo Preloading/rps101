@@ -22,6 +22,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useGtag } from "vue-gtag-next";
+const { event } = useGtag()
 
 var gamePublic = ref(false);
 var gameType = ref(false); // Deathmatch - false Classes - true
@@ -31,6 +33,11 @@ const router = useRouter()
 const route = useRoute()
 
 function createGame() {
+    event('game_created', {
+        "gamePublic": gamePublic.value,
+        "gameType": gameType.value,
+        "gameMatches": gameMatches.value,
+    })
     router.push({
         name: 'host',
         query: {

@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import GameView from '../views/GameView.vue'
 import HostView from '../views/HostView.vue'
+import { trackRouter } from "vue-gtag-next";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -27,5 +29,7 @@ const router = createRouter({
     }
   ]
 })
+
+trackRouter(router)
 
 export default router

@@ -35,6 +35,9 @@ import { gamesRef } from '../../../firebase.js'
 import { onMounted, computed } from 'vue';
 const emit = defineEmits(["game-finished"])
 
+import { useGtag } from "vue-gtag-next";
+const { event } = useGtag()
+
 //import Bracket from 'vue-tournament-bracket';
 
 const props = defineProps(["game-doc-id"]);
@@ -215,6 +218,10 @@ async function setMatches() {
    if (winnerUsers.length <= 1) {
       let finalWinner = useDocument(doc(playersRef, winnerUsers[0]))
       await finalWinner.promise.value;
+      event('winner_determined', {
+            'game_code': game.data.value.gameCode,
+            'winner_id': finalWinner.data.value.id
+         })
       //players.data.value[winnerUsers[0]];
       alert("The game has ended! The winner was " + finalWinner.data.value.displayName + ". This is a temp win screen. To play again go back to main site or refresh")
 
@@ -273,6 +280,7 @@ async function findWinners() {
          if (element.player1choice != 0) {
             evilbotDesision = outcomes[element.player1choice -1].compares[(Math.floor(Math.random() * outcomes[element.player1choice -1].compares.length))].other_gesture_id; // Selects a random move that loses
          }
+         
          updateDoc(doc(matchesRef, element.id), {
             player2choice: evilbotDesision,
             winner: 1
@@ -290,7 +298,14 @@ async function findWinners() {
                flippedCoin: flippedCoin
             })
       }
-      
+      event('host_match_done', {
+            'game_code': game.data.value.gameCode,
+            'match_id': element.id,
+            'player1id': element.player1id,
+            'player1choice': element.player1choice,
+            'player2id': element.player2id,
+            'player2choice': element.player2choice,
+         })
    });
 }
 function getWinner(player1result, player2result) {
